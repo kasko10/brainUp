@@ -3,310 +3,349 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>brainUp // CYBER ARENA</title>
+    <title>brainUp — Интерактивті білім платформасы</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #07080d;
-            --card-bg: rgba(16, 20, 34, 0.9);
-            --neon-cyan: #00f3ff;
-            --neon-pink: #ff007f;
-            --neon-green: #00ff66;
-            --neon-red: #ff2a2a;
-            --text-main: #e2e8f0;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border-light: #e2e8f0;
+            --success-bg: #ecfdf5;
+            --success-border: #10b981;
+            --success-text: #065f46;
+            --error-bg: #fef2f2;
+            --error-border: #ef4444;
+            --error-text: #991b1b;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Rajdhani', sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         body {
-            background-color: var(--bg-dark);
-            background-image: 
-                linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
-            background-size: 35px 35px;
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-color: var(--bg-page);
+            color: var(--text-dark);
             min-height: 100vh;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .arena-box {
-            background: var(--card-bg);
-            border: 1px solid rgba(0, 243, 255, 0.3);
-            box-shadow: 0 0 30px rgba(0, 243, 255, 0.15), inset 0 0 20px rgba(0, 243, 255, 0.05);
-            width: 100%;
-            max-width: 720px;
-            padding: 35px;
-            position: relative;
-            clip-path: polygon(0 0, calc(100% - 25px) 0, 100% 25px, 100% 100%, 25px 100%, 0 calc(100% - 25px));
-        }
-
-        .logo {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.8rem;
-            font-weight: 900;
-            text-align: center;
-            letter-spacing: 2px;
-            color: #fff;
-            text-shadow: 0 0 12px var(--neon-cyan);
-            margin-bottom: 5px;
-        }
-
-        .logo span {
-            color: var(--neon-pink);
-            text-shadow: 0 0 12px var(--neon-pink);
-        }
-
-        .tagline {
-            text-align: center;
-            color: var(--neon-cyan);
-            letter-spacing: 3px;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            margin-bottom: 30px;
-        }
-
-        .cyber-input {
-            width: 100%;
-            max-width: 400px;
-            display: block;
-            margin: 0 auto 25px;
-            padding: 15px 20px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid var(--neon-cyan);
-            color: #fff;
-            font-size: 1.2rem;
-            text-align: center;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        .cyber-input:focus {
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
-            border-color: #fff;
-        }
-
-        .cyber-btn {
-            display: block;
-            margin: 0 auto;
-            background: transparent;
-            color: var(--neon-cyan);
-            border: 2px solid var(--neon-cyan);
-            padding: 14px 45px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: 0.25s;
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
-        }
-
-        .cyber-btn:hover {
-            background: var(--neon-cyan);
-            color: #000;
-            box-shadow: 0 0 25px var(--neon-cyan);
-        }
-
-        /* Ойын экраны */
-        .progress-track {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan));
-            box-shadow: 0 0 10px var(--neon-cyan);
-            transition: width 0.1s linear;
-        }
-
-        .hud-bar {
+        /* Жоғарғы сайт мәзірі (Navbar) */
+        .navbar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-light);
+            padding: 16px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.95rem;
-            color: var(--neon-cyan);
         }
 
-        .streak-badge {
-            color: var(--neon-pink);
-            text-shadow: 0 0 8px var(--neon-pink);
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            text-decoration: none;
+            letter-spacing: -0.5px;
         }
 
-        .question-box {
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 28px;
-            line-height: 1.4;
-            color: #fff;
-            border-left: 4px solid var(--neon-pink);
-            padding-left: 15px;
+        .brand span {
+            color: var(--primary);
         }
 
-        .options-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .option-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(0, 243, 255, 0.25);
-            color: #fff;
-            padding: 18px;
-            font-size: 1.2rem;
+        .nav-badge {
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
             font-weight: 600;
+        }
+
+        /* Негізгі орталық аймақ */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 20px;
+        }
+
+        .card-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.02);
+            width: 100%;
+            max-width: 680px;
+            padding: 40px;
+        }
+
+        /* Бастапқы экран */
+        .hero-section {
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+            line-height: 1.25;
+        }
+
+        .hero-desc {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .input-group {
+            max-width: 380px;
+            margin: 0 auto 20px;
+            text-align: left;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .clean-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .clean-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .primary-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 14px 36px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .primary-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .primary-btn:active {
+            transform: scale(0.99);
+        }
+
+        /* Тест экраны */
+        .top-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .timer-pill {
+            background: #f1f5f9;
+            color: var(--text-dark);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: #f1f5f9;
+            border-radius: 99px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 25%;
+            background: var(--primary);
+            border-radius: 99px;
+            transition: width 0.3s ease;
+        }
+
+        .question-heading {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            line-height: 1.4;
+            color: var(--text-dark);
+        }
+
+        .answers-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .answer-item {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-light);
+            border-radius: 14px;
+            padding: 16px 20px;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--text-dark);
             text-align: left;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .answer-item:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #f8fafc;
+        }
+
+        .letter-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
             transition: all 0.2s;
         }
 
-        .option-card:hover:not(:disabled) {
-            background: rgba(0, 243, 255, 0.12);
-            border-color: var(--neon-cyan);
-            transform: translateX(4px);
+        .answer-item:hover:not(:disabled) .letter-badge {
+            background: var(--primary);
+            color: #fff;
         }
 
-        .option-tag {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1rem;
-            color: var(--neon-cyan);
-            border: 1px solid var(--neon-cyan);
-            padding: 4px 10px;
-            min-width: 36px;
+        .answer-item.correct {
+            background: var(--success-bg) !important;
+            border-color: var(--success-border) !important;
+            color: var(--success-text) !important;
+        }
+
+        .answer-item.correct .letter-badge {
+            background: var(--success-border);
+            color: #fff;
+        }
+
+        .answer-item.wrong {
+            background: var(--error-bg) !important;
+            border-color: var(--error-border) !important;
+            color: var(--error-text) !important;
+        }
+
+        .answer-item.wrong .letter-badge {
+            background: var(--error-border);
+            color: #fff;
+        }
+
+        /* Нәтиже экраны */
+        .result-view {
             text-align: center;
         }
 
-        .option-card.correct {
-            background: rgba(0, 255, 102, 0.2) !important;
-            border-color: var(--neon-green) !important;
-            box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+        .score-circle {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: #eff6ff;
+            border: 4px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 24px auto;
         }
 
-        .option-card.wrong {
-            background: rgba(255, 42, 42, 0.2) !important;
-            border-color: var(--neon-red) !important;
-            box-shadow: 0 0 15px rgba(255, 42, 42, 0.4);
+        .score-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .score-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
         }
 
         .hidden { display: none; }
 
-        /* Нәтиже экраны */
-        .result-stats {
+        footer {
             text-align: center;
-            margin: 25px 0;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
         }
 
-        .final-points {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 3rem;
-            font-weight: 900;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 20px var(--neon-cyan);
-            margin: 15px 0;
-        }
-
-        @media (max-width: 600px) {
-            .options-list { grid-template-columns: 1fr; }
-            .logo { font-size: 2.1rem; }
+        @media (max-width: 500px) {
+            .card-container { padding: 25px 20px; }
+            .hero-title { font-size: 1.6rem; }
+            .navbar { padding: 14px 20px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="arena-box">
-        <!-- Бастапқы экран -->
-        <div id="start-screen">
-            <div class="logo">brain<span>Up</span></div>
-            <div class="tagline">// NEURAL QUIZ ARENA v2.0</div>
-            <input type="text" id="player-name" class="cyber-input" placeholder="ОЙЫНШЫ ЛАҚАП АТЫ..." maxlength="18">
-            <button class="cyber-btn" onclick="startGame()">ЖҮЙЕГЕ КІРУ</button>
-        </div>
+    <nav class="navbar">
+        <a href="#" class="brand">brain<span>Up</span></a>
+        <div class="nav-badge">Онлайн тестілеу</div>
+    </nav>
 
-        <!-- Ойын экраны -->
-        <div id="game-screen" class="hidden">
-            <div class="progress-track">
-                <div class="progress-fill" id="progress-bar"></div>
+    <main class="main-wrapper">
+        <div class="card-container">
+            <!-- Бастапқы экран -->
+            <div id="start-screen" class="hero-section">
+                <h1 class="hero-title">Біліміңізді тексеріп, жаңа деңгейге көтеріліңіз</h1>
+                <p class="hero-desc">Қысқа әрі қызықты интерактивті сұрақтарға жауап беріп, өз нәтижеңізді бірден біліңіз.</p>
+                
+                <div class="input-group">
+                    <label class="input-label" for="player-name">Аты-жөніңіз</label>
+                    <input type="text" id="player-name" class="clean-input" placeholder="Мысалы: Әлихан" maxlength="25">
+                </div>
+                
+                <button class="primary-btn" onclick="startQuiz()">Тестті бастау</button>
             </div>
-            <div class="hud-bar">
-                <span id="q-counter">МОДУЛЬ 01/04</span>
-                <span id="streak-display" class="streak-badge">STREAK: x1</span>
-                <span id="score-display">XP: 0</span>
-            </div>
-            <div class="question-box" id="question-text">Сұрақ жүктелуде...</div>
-            <div class="options-list" id="options-container"></div>
-        </div>
 
-        <!-- Нәтиже экраны -->
-        <div id="result-screen" class="hidden">
-            <div class="logo">brain<span>Up</span></div>
-            <div class="tagline">// МИССИЯ АЯҚТАЛДЫ</div>
-            <div class="result-stats">
-                <p id="final-player" style="font-size: 1.4rem; letter-spacing: 1px;"></p>
-                <div class="final-points" id="final-score">0 XP</div>
-                <p id="accuracy-text" style="color: #94a3b8; font-size: 1.1rem;"></p>
-            </div>
-            <button class="cyber-btn" onclick="location.reload()">ҚАЙТА ІСКЕ ҚОСУ</button>
-        </div>
-    </div>
+            <!-- Сұрақтар экраны -->
+            <div id="quiz-screen" class="hidden">
+                <div class="top-meta">
+                    <span id="q-progress-text">Сұрақ 1 / 4</span>
+                    <span class="timer-pill">⏱ <span id="timer">15</span> сек</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progress-fill"></div>
+                </div>
 
-    <script>
-        const questions = [
-            {
-                q: "Қазақстанның астанасы қай қала?",
-                options: ["Алматы", "Астана", "Шымкент", "Түркістан"],
-                correct: 1
-            },
-            {
-                q: "Күн жүйесіндегі ең үлкен ғаламшар қалай аталады?",
-                options: ["Марс", "Жер", "Юпитер", "Сатурн"],
-                correct: 2
-            },
-            {
-                q: "1 байт ақпаратта неше бит бар?",
-                options: ["4 бит", "8 бит", "16 бит", "32 бит"],
-                correct: 1
-            },
-            {
-                q: "Абай Құнанбайұлы қай жылы дүниеге келді?",
-                options: ["1845", "1835", "1855", "1865"],
-                correct: 0
-            }
-        ];
-
-        const tags = ["A", "B", "C", "D"];
-        let currentQ = 0;
-        let score = 0;
-        let streak = 1;
-        let correctCount = 0;
-        let timeLeft = 15;
-        let timerInterval;
-        let playerName = "";
-        let isAnswered = false;
-
-        function startGame() {
-            const input = document.getElementById("player-name").value.trim();
-            if (!input) {
-                alert("Жүйеге кіру үшін лақап атыңызды енгізіңіз!");
-                return;
-            }
-            playerName = input.toUpperCase();
-            document.getElementById("start-screen").classList.add("hidden");
