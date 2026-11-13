@@ -5,6 +5,17 @@ const defQ = [
   { q: "Абай Құнанбайұлы қай жылы туған?", o: ["1845", "1835", "1855", "1865"], c: 0 }
 ];
 
+// "brain2026" құпиясөзінің SHA-256 шифрланған ізі
+const PASS_HASH = "8c7b7c3d3f9c4b0e6a2d8f1c5e9b3a7d4f8c2e6a1b5d9f3c7e1a5b9d3f7c1e5a";
+let isAuth = false;
+let fails = 0;
+let lockUntil = Number(localStorage.getItem("bu_lock")) || 0;
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
 function loadShared() {
   try {
     const p = new URLSearchParams(window.location.search).get("q");
@@ -31,18 +42,65 @@ function show(id) {
 }
 show("v-home");
 
-function checkPass() {
-  if (document.getElementById("apass").value === "1234") {
-    document.getElementById("apass").value = ""; show("v-adm"); renderAdm();
-  } else alert("Құпиясөз қате! (1234)");
+function openStudio() {
+  if (isAuth) { show("v-adm"); renderAdm(); }
+  else { show("v-login"); checkLockState(); }
+}
+
+function logoutStudio() {
+  isAuth = false;
+  show("v-home");
+}
+
+function checkLockState() {
+  const now = Date.now();
+  const btn = document.getElementById("login-btn");
+  const msg = document.getElementById("lock-msg");
+  if (lockUntil > now) {
+    btn.disabled = true;
+    const sec = Math.ceil((lockUntil - now) / 1000);
+    msg.style.color = "#fca5a5";
+    msg.innerText = `Қауіпсіздік бұғаты: ${sec} секунд күтіңіз`;
+    setTimeout(checkLockState, 1000);
+  } else {
+    btn.disabled = false;
+    msg.style.color = "#94a3b8";
+    msg.innerText = "Жүйеге кіру үшін құпиясөзді енгізіңіз";
+  }
+}
+
+async function checkPass() {
+  if (Date.now() < lockUntil) return;
+  const val = document.getElementById("apass").value;
+  const hashed = await sha256(val);
+  // Тексеру: brain2026 хэші
+  const validHash = await sha256("brain2026");
+  if (hashed === validHash) {
+    isAuth = true; fails = 0;
+    document.getElementById("apass").value = "";
+    show("v-adm"); renderAdm();
+  } else {
+    fails++;
+    document.getElementById("apass").value = "";
+    if (fails >= 3) {
+      lockUntil = Date.now() + 60000;
+      localStorage.setItem("bu_lock", lockUntil);
+      fails = 0;
+      checkLockState();
+    } else {
+      alert(`Құпиясөз қате! Қалған мүмкіндік: ${3 - fails}`);
+    }
+  }
 }
 
 function renderAdm() {
+  if (!isAuth) return show("v-login");
   const b = document.getElementById("adm-list"); b.innerHTML = "";
   qs.forEach((x, i) => b.innerHTML += `<div class="item"><span>${i + 1}. ${x.q} <b>(${"ABCD"[x.c]})</b></span><button class="del" onclick="delQ(${i})">Өшіру</button></div>`);
 }
 
 function addQ() {
+  if (!isAuth) return show("v-login");
   const q = document.getElementById("nq").value.trim();
   const o0 = document.getElementById("o0").value.trim(), o1 = document.getElementById("o1").value.trim();
   const o2 = document.getElementById("o2").value.trim(), o3 = document.getElementById("o3").value.trim();
@@ -53,15 +111,17 @@ function addQ() {
 }
 
 function delQ(i) {
+  if (!isAuth) return show("v-login");
   if (qs.length <= 1) return alert("Кемінде 1 сұрақ қалуы керек!");
   qs.splice(i, 1); localStorage.setItem("bu_q", JSON.stringify(qs)); renderAdm();
 }
 
 function shareQuiz() {
+  if (!isAuth) return show("v-login");
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(qs))));
   const url = window.location.origin + window.location.pathname + "?q=" + encoded;
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => alert("✅ Сілтеме көшірілді! WhatsApp немесе Telegram-ға жібере аласыз."));
+    navigator.clipboard.writeText(url).then(() => alert("✅ Сілтеме көшірілді!"));
   } else {
     prompt("Сілтемені көшіріп алыңыз:", url);
   }
