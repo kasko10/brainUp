@@ -4,7 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>brainUp</title>
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=10">
+<style>
+  /* Телефон мен компьютерде міндетті түрде 2x2 шығаратын ереже */
+  #q-opts {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+  #q-opts .opt {
+    width: 100% !important;
+    margin: 0 !important;
+    min-height: 82px !important;
+    padding: 34px 10px 12px 10px !important;
+    font-size: 0.92rem !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    word-break: break-word !important;
+  }
+</style>
 </head>
 <body>
 <div class="orb o1"></div><div class="orb o2"></div><canvas id="cv"></canvas>
@@ -68,6 +87,6 @@
     <div id="l-list"></div>
   </div>
 </main>
-<script src="script.js?v=5"></script>
+<script src="script.js?v=10"></script>
 </body>
 </html>
