@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>brainUp — Интерактивті білім платформасы</title>
-<link rel="stylesheet" href="style.css?v=70">
+<link rel="stylesheet" href="style.css?v=100">
 </head>
 <body>
 <div class="orb o1"></div><div class="orb o2"></div><canvas id="cv"></canvas>
@@ -50,7 +50,7 @@
     <div id="v-adm" class="hide">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
         <h2 style="margin:0;text-align:left">Сұрақтар конструкторы</h2>
-        <button type="button" class="tab" onclick="isAuth=false;show('v-home')">Шығу 🔒</button>
+        <button type="button" class="tab" onclick="logoutStudio()">Шығу 🔒</button>
       </div>
       <input type="text" id="nq" placeholder="Сұрақ мәтіні...">
       <div class="grid2">
@@ -71,100 +71,6 @@
     <div id="l-list"></div>
   </div>
 </main>
-<script>
-const defQ=[
-  {q:"Қазақстанның астанасы қай қала?",o:["Алматы","Астана","Шымкент","Түркістан"],c:1},
-  {q:"Ең үлкен ғаламшар қалай аталады?",o:["Марс","Жер","Юпитер","Сатурн"],c:2},
-  {q:"1 байтта неше бит бар?",o:["4 бит","8 бит","16 бит","32 бит"],c:1},
-  {q:"Абай Құнанбайұлы қай жылы туған?",o:["1845","1835","1855","1865"],c:0}
-];
-let isAuth=false,fails=0,lockUntil=Number(localStorage.getItem("bu_lock_v10"))||0;
-function loadShared(){try{const p=new URLSearchParams(location.search).get("q");if(!p)return null;const bin=atob(p);return JSON.parse(new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0))))}catch(e){return null}}
-const sharedQ=loadShared();
-let qs=sharedQ||JSON.parse(localStorage.getItem("bu_q"))||defQ;
-let leads=JSON.parse(localStorage.getItem("bu_l"))||[{n:"Әлихан",s:520},{n:"Айзере",s:440}];
-let idx=0,pts=0,ok=0,t=15,tm,usr="",lock=false,log=[];
-
-function show(id){
-  clearInterval(tm);
-  if(id==="v-login"&&isAuth)id="v-adm";
-  ["v-home","v-login","v-quiz","v-res","v-adm"].forEach(v=>document.getElementById(v).classList.add("hide"));
-  document.getElementById(id).classList.remove("hide");
-  document.getElementById("board").classList.toggle("hide",id!=="v-home");
-  document.getElementById("t-user").classList.toggle("on",id!=="v-adm"&&id!=="v-login");
-  document.getElementById("t-adm").classList.toggle("on",id==="v-adm"||id==="v-login");
-  document.getElementById("q-info").innerText=(sharedQ?"🔗 Арнайы сілтемедегі тест: ":"Платформада ")+qs.length+" сұрақ дайын";
-  const b=document.getElementById("l-list");b.innerHTML="";
-  leads.slice(0,3).forEach((x,i)=>b.innerHTML+=`<div class="row"><span>${i+1}. ${x.n}</span><b>${x.s} ұпай</b></div>`);
-  if(id==="v-login")checkLock();
-  if(id==="v-adm")renderAdm();
-}
-show("v-home");
-
-function checkLock(){
-  const now=Date.now(),btn=document.getElementById("login-btn"),msg=document.getElementById("lock-msg");
-  if(lockUntil>now){btn.disabled=true;msg.style.color="#fca5a5";msg.innerText="Бұғатталды: "+Math.ceil((lockUntil-now)/1000)+" сек күтіңіз";setTimeout(checkLock,1000)}
-  else{btn.disabled=false;msg.style.color="#94a3b8";msg.innerText="Құпиясөзді енгізіңіз"}
-}
-function checkPass(){
-  if(Date.now()<lockUntil)return;
-  if(document.getElementById("apass").value.trim()==="brain2026"){isAuth=true;fails=0;document.getElementById("apass").value="";show("v-adm")}
-  else{fails++;document.getElementById("apass").value="";if(fails>=3){lockUntil=Date.now()+60000;localStorage.setItem("bu_lock_v10",lockUntil);fails=0;checkLock()}else alert("Құпиясөз қате! Қалған мүмкіндік: "+(3-fails))}
-}
-function renderAdm(){
-  const b=document.getElementById("adm-list");b.innerHTML="";
-  qs.forEach((x,i)=>b.innerHTML+=`<div class="item"><span>${i+1}. ${x.q} <b>(${"ABCD"[x.c]})</b></span><button type="button" class="del" onclick="delQ(${i})">Өшіру</button></div>`);
-}
-function addQ(){
-  const q=document.getElementById("nq").value.trim(),o0=document.getElementById("o0").value.trim(),o1=document.getElementById("o1").value.trim(),o2=document.getElementById("o2").value.trim(),o3=document.getElementById("o3").value.trim();
-  if(!q||!o0||!o1||!o2||!o3)return alert("Барлық жолды толтырыңыз!");
-  qs.push({q,o:[o0,o1,o2,o3],c:Number(document.getElementById("nc").value)});
-  localStorage.setItem("bu_q",JSON.stringify(qs));
-  ["nq","o0","o1","o2","o3"].forEach(i=>document.getElementById(i).value="");renderAdm();
-}
-function delQ(i){
-  if(qs.length<=1)return alert("Кемінде 1 сұрақ қалуы керек!");
-  qs.splice(i,1);localStorage.setItem("bu_q",JSON.stringify(qs));renderAdm();
-}
-function shareQuiz(){
-  const bytes=new TextEncoder().encode(JSON.stringify(qs));let bin="";bytes.forEach(b=>bin+=String.fromCharCode(b));
-  const url=location.origin+location.pathname+"?q="+btoa(bin);
-  if(navigator.clipboard)navigator.clipboard.writeText(url).then(()=>alert("✅ Сілтеме көшірілді!"));
-  else prompt("Сілтемені көшіріп алыңыз:",url);
-}
-function startQuiz(){usr=document.getElementById("uname").value.trim()||usr||"Қонақ";idx=0;pts=0;ok=0;log=[];show("v-quiz");nextQ()}
-function nextQ(){
-  clearInterval(tm);lock=false;t=15;
-  document.getElementById("sec").innerText=t;
-  document.getElementById("q-num").innerText=`Сұрақ ${idx+1} / ${qs.length}`;
-  document.getElementById("pfill").style.width=((idx+1)/qs.length*100)+"%";
-  document.getElementById("q-txt").innerText=qs[idx].q;
-  const b=document.getElementById("q-opts");b.innerHTML="";
-  qs[idx].o.forEach((txt,i)=>{const btn=document.createElement("button");btn.type="button";btn.className="opt";btn.innerText=txt;btn.onclick=()=>pick(i);b.appendChild(btn)});
-  tm=setInterval(()=>{t--;document.getElementById("sec").innerText=t;if(t<=0){clearInterval(tm);pick(-1)}},1000);
-}
-function pick(sel){
-  if(lock)return;lock=true;clearInterval(tm);
-  const item=qs[idx],cor=item.c;
-  document.querySelectorAll(".opt").forEach((b,i)=>{b.disabled=true;if(i===cor)b.classList.add("ok");else if(i===sel)b.classList.add("no")});
-  const isRight=(sel===cor);if(isRight){ok++;pts+=100+t*10}
-  log.push({q:item.q,u:sel>=0?item.o[sel]:"Уақыт бітті ⏱",c:item.o[cor],right:isRight});
-  setTimeout(()=>{idx++;if(idx<qs.length)nextQ();else finish()},850);
-}
-document.addEventListener("keydown",e=>{
-  if(document.getElementById("v-quiz").classList.contains("hide")||lock)return;
-  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};const k=e.key.toLowerCase();
-  if(k in map&&qs[idx]&&qs[idx].o[map[k]])pick(map[k]);
-});
-function finish(){
-  leads.unshift({n:usr,s:pts});leads.sort((a,b)=>b.s-a.s);
-  localStorage.setItem("bu_l",JSON.stringify(leads.slice(0,5)));
-  show("v-res");
-  document.getElementById("r-hi").innerText="Жарайсыз, "+usr+"!";
-  document.getElementById("r-pts").innerText=pts+" ұпай";
-  document.getElementById("r-stat").innerText=`${qs.length} сұрақтың ${ok}-і дұрыс`;
-  const rev=document.getElementById("review-list");
-  rev.innerHTML="<div style='font-weight:700;margin-bottom:10px;color:#a5b4fc'>📋 Қателермен жұмыс:</div>";
-  log.forEach((h,i)=>{
-    rev.innerHTML+=`<div style="background:#0b0f19;border-left:4px solid ${h.right?'#10b981':'#ef4444'};padding:10px 14px;border-radius:8px;margin-bottom:8px;text-align:left;font-size:.92rem">
-      <div style="font-weight:700;margin-bottom:4px">${i+1}. ${h.q}</div>
+<script src="script.js?v=100"></script>
+</body>
+</html>
