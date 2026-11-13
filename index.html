@@ -1,1 +1,72 @@
 
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>brainUp</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="orb o1"></div><div class="orb o2"></div><canvas id="cv"></canvas>
+<nav>
+  <div class="logo" onclick="show('v-home')">brain<span>Up</span></div>
+  <div class="tabs">
+    <button class="tab on" id="t-user" onclick="show('v-home')">Қатысушы</button>
+    <button class="tab" id="t-adm" onclick="show('v-login')">Басқарушы</button>
+  </div>
+</nav>
+<main>
+  <div class="card">
+    <div id="v-home">
+      <h1>Біліміңізді тексеріңіз</h1>
+      <p class="sub" id="q-info"></p>
+      <input type="text" id="uname" placeholder="Аты-жөніңіз...">
+      <button class="btn" onclick="startQuiz()">Тестті бастау →</button>
+    </div>
+    <div id="v-login" class="hide">
+      <h2>Басқарушы бөлімі</h2>
+      <p class="sub">Құпиясөзді енгізіңіз (әдепкі: 1234)</p>
+      <input type="password" id="apass" placeholder="Құпиясөз...">
+      <button class="btn" onclick="checkPass()">Кіру</button>
+    </div>
+    <div id="v-quiz" class="hide">
+      <div style="display:flex;justify-content:space-between;color:#94a3b8;margin-bottom:10px">
+        <span id="q-num"></span><span>⏱ <b id="sec">15</b> сек</span>
+      </div>
+      <div class="pbar"><div class="pfill" id="pfill"></div></div>
+      <h2 id="q-txt" style="text-align:left;margin-bottom:14px"></h2>
+      <div id="q-opts"></div>
+    </div>
+    <div id="v-res" class="hide" style="text-align:center">
+      <h2 id="r-hi"></h2>
+      <h1 id="r-pts" style="color:#a5b4fc;font-size:2.5rem;margin:14px 0"></h1>
+      <p id="r-stat" class="sub"></p>
+      <div class="grid2">
+        <button class="btn" onclick="startQuiz()">Қайталау</button>
+        <button class="btn btn2" onclick="show('v-home')">Жабу</button>
+      </div>
+    </div>
+    <div id="v-adm" class="hide">
+      <h2 style="text-align:left">Сұрақ құрастырушы</h2>
+      <input type="text" id="nq" placeholder="Сұрақ мәтіні...">
+      <div class="grid2">
+        <input type="text" id="o0" placeholder="A нұсқасы"><input type="text" id="o1" placeholder="B нұсқасы">
+        <input type="text" id="o2" placeholder="C нұсқасы"><input type="text" id="o3" placeholder="D нұсқасы">
+      </div>
+      <select id="nc">
+        <option value="0">Дұрыс жауап: A</option><option value="1">Дұрыс жауап: B</option>
+        <option value="2">Дұрыс жауап: C</option><option value="3">Дұрыс жауап: D</option>
+      </select>
+      <button class="btn" onclick="addQ()">+ Сұрақты қосу</button>
+      <div id="adm-list" style="margin-top:14px;max-height:200px;overflow-y:auto"></div>
+    </div>
+  </div>
+  <div class="board" id="board">
+    <div style="font-size:0.85rem;color:#94a3b8;font-weight:700;margin-bottom:8px">🏆 ҮЗДІК НӘТИЖЕЛЕР</div>
+    <div id="l-list"></div>
+  </div>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
