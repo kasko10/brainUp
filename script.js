@@ -5,8 +5,8 @@ const defQ = [
   { q: "Абай Құнанбайұлы қай жылы туған?", o: ["1845", "1835", "1855", "1865"], c: 0 }
 ];
 
-// "brain2026" құпиясөзінің SHA-256 шифрланған ізі
-const PASS_HASH = "8c7b7c3d3f9c4b0e6a2d8f1c5e9b3a7d4f8c2e6a1b5d9f3c7e1a5b9d3f7c1e5a";
+// Құпиясөздің шифрланған ізі (SHA-256)
+const SECRET_HASH = "e719c264ef1d9319c7e4e2a50a31a2fc57379f44d2a1b43b155770415c9b8b49";
 let isAuth = false;
 let fails = 0;
 let lockUntil = Number(localStorage.getItem("bu_lock")) || 0;
@@ -73,9 +73,7 @@ async function checkPass() {
   if (Date.now() < lockUntil) return;
   const val = document.getElementById("apass").value;
   const hashed = await sha256(val);
-  // Тексеру: brain2026 хэші
-  const validHash = await sha256("brain2026");
-  if (hashed === validHash) {
+  if (hashed === SECRET_HASH) {
     isAuth = true; fails = 0;
     document.getElementById("apass").value = "";
     show("v-adm"); renderAdm();
