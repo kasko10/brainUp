@@ -38,7 +38,6 @@
             flex-direction: column;
         }
 
-        /* Жоғарғы сайт мәзірі (Navbar) */
         .navbar {
             background: rgba(19, 26, 42, 0.8);
             backdrop-filter: blur(12px);
@@ -71,7 +70,6 @@
             font-weight: 600;
         }
 
-        /* Негізгі орталық аймақ */
         .main-wrapper {
             flex: 1;
             display: flex;
@@ -87,10 +85,9 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             width: 100%;
             max-width: 680px;
-            padding: 42px;
+            padding: 45px 40px;
         }
 
-        /* Бастапқы экран */
         .hero-section {
             text-align: center;
         }
@@ -98,7 +95,7 @@
         .hero-title {
             font-size: 2rem;
             font-weight: 800;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             color: var(--text-main);
             line-height: 1.25;
         }
@@ -106,57 +103,22 @@
         .hero-desc {
             color: var(--text-muted);
             font-size: 1.05rem;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
             line-height: 1.6;
-        }
-
-        .input-group {
-            max-width: 380px;
-            margin: 0 auto 20px;
-            text-align: left;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-muted);
-        }
-
-        .clean-input {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--bg-surface);
-            border: 1.5px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 1rem;
-            color: var(--text-main);
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .clean-input::placeholder {
-            color: #64748b;
-        }
-
-        .clean-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
         .primary-btn {
             background: var(--primary);
             color: #fff;
             border: none;
-            padding: 15px 36px;
-            font-size: 1rem;
+            padding: 16px 42px;
+            font-size: 1.05rem;
             font-weight: 700;
             border-radius: 12px;
             cursor: pointer;
             transition: background 0.2s, transform 0.1s;
             width: 100%;
-            max-width: 380px;
+            max-width: 320px;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
         }
 
@@ -165,10 +127,9 @@
         }
 
         .primary-btn:active {
-            transform: scale(0.99);
+            transform: scale(0.98);
         }
 
-        /* Тест экраны */
         .top-meta {
             display: flex;
             justify-content: space-between;
@@ -286,7 +247,6 @@
             color: #fff;
         }
 
-        /* Нәтиже экраны */
         .result-view {
             text-align: center;
         }
@@ -326,7 +286,7 @@
         }
 
         @media (max-width: 500px) {
-            .card-container { padding: 26px 20px; }
+            .card-container { padding: 30px 20px; }
             .hero-title { font-size: 1.6rem; }
             .navbar { padding: 14px 20px; }
         }
@@ -341,10 +301,33 @@
 
     <main class="main-wrapper">
         <div class="card-container">
-            <!-- Бастапқы экран -->
             <div id="start-screen" class="hero-section">
                 <h1 class="hero-title">Біліміңізді тексеріп, жаңа деңгейге көтеріліңіз</h1>
                 <p class="hero-desc">Қысқа әрі қызықты интерактивті сұрақтарға жауап беріп, өз нәтижеңізді бірден біліңіз.</p>
+                <button class="primary-btn" onclick="startQuiz()">Тестті бастау</button>
+            </div>
+
+            <div id="quiz-screen" class="hidden">
+                <div class="top-meta">
+                    <span id="q-progress-text">Сұрақ 1 / 4</span>
+                    <span class="timer-pill">⏱ <span id="timer">15</span> сек</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progress-fill"></div>
+                </div>
+
+                <div class="question-heading" id="question-text">Сұрақ жүктелуде...</div>
+                <div class="answers-stack" id="answers-container"></div>
+            </div>
+
+            <div id="result-screen" class="result-view hidden">
+                <h2 class="hero-title">Жарайсыз!</h2>
+                <p class="hero-desc">Тест сәтті аяқталды</p>
                 
-                <div class="input-group">
-                    <label class="input-label" for="player-name">Аты-жөніңіз</label>
+                <div class="score-circle">
+                    <span class="score-number" id="final-score">0</span>
+                    <span class="score-label">ҰПАЙ</span>
+                </div>
+
+                <p id="stats-summary" style="margin-bottom: 25px; font-weight: 600; color: var(--text-main);"></p>
+                <button class="primary-btn" onclick="location.reload()">Қайта тапсыру</button>
