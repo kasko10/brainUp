@@ -20,62 +20,38 @@ h1, h2 { margin-bottom: 12px; text-align: center; }
 input, select { width: 100%; padding: 13px; margin-bottom: 12px; background: #0b0f19; border: 1px solid #243049; border-radius: 10px; color: #fff; font-size: 1rem; }
 .btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; }
 .btn2 { background: #1b2438; border: 1px solid #243049; }
+.btn-share { background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #6ee7b7; margin-top: 10px; }
+.btn-share:hover { background: #10b981; color: #fff; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-/* 2x2 ПЛИТКАЛАР СТИЛІ */
+/* 2x2 Плиткалар */
 #q-txt { background: rgba(11, 15, 25, 0.55); border: 1px solid rgba(255,255,255,0.07); padding: 20px; border-radius: 16px; font-size: 1.25rem; line-height: 1.45; margin-bottom: 18px !important; }
 #q-opts { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 14px !important; }
-
 .opt {
-  position: relative;
-  min-height: 92px;
-  padding: 36px 16px 16px 16px;
-  background: rgba(27, 36, 56, 0.75);
-  border: 1.5px solid rgba(255, 255, 255, 0.09);
-  border-radius: 16px;
-  color: #f8fafc;
-  text-align: left;
-  font-size: 1.02rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.22s ease;
-  display: flex;
-  align-items: flex-end;
-  margin-top: 0 !important;
+  position: relative; min-height: 92px; padding: 36px 16px 16px 16px; background: rgba(27, 36, 56, 0.75);
+  border: 1.5px solid rgba(255, 255, 255, 0.09); border-radius: 16px; color: #f8fafc; text-align: left;
+  font-size: 1.02rem; font-weight: 600; cursor: pointer; transition: all 0.22s ease; display: flex; align-items: flex-end; margin-top: 0 !important;
 }
-
 .opt::before {
-  position: absolute;
-  top: 12px;
-  left: 14px;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  background: rgba(99, 102, 241, 0.22);
-  color: #a5b4fc;
-  font-size: 0.78rem;
-  font-weight: 800;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: absolute; top: 12px; left: 14px; width: 24px; height: 24px; border-radius: 6px;
+  background: rgba(99, 102, 241, 0.22); color: #a5b4fc; font-size: 0.78rem; font-weight: 800; display: flex; justify-content: center; align-items: center;
 }
 .opt:nth-child(1)::before { content: "A"; }
 .opt:nth-child(2)::before { content: "B"; }
 .opt:nth-child(3)::before { content: "C"; }
 .opt:nth-child(4)::before { content: "D"; }
-
-.opt:hover:not(:disabled) {
-  border-color: #6366f1;
-  background: rgba(99, 102, 241, 0.16);
-  transform: translateY(-3px);
-  box-shadow: 0 10px 22px rgba(99, 102, 241, 0.25);
-}
+.opt:hover:not(:disabled) { border-color: #6366f1; background: rgba(99, 102, 241, 0.16); transform: translateY(-3px); }
 .opt:hover:not(:disabled)::before { background: #6366f1; color: #fff; }
-
 .ok { background: rgba(16,185,129,0.22) !important; border-color: #10b981 !important; color: #6ee7b7 !important; }
 .ok::before { background: #10b981 !important; color: #fff !important; }
 .no { background: rgba(239,68,68,0.22) !important; border-color: #ef4444 !important; color: #fca5a5 !important; }
 .no::before { background: #ef4444 !important; color: #fff !important; }
+
+/* Қателермен жұмыс блогы */
+.review-box { text-align: left; margin: 18px 0 22px; max-height: 240px; overflow-y: auto; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; }
+.rev-item { background: rgba(11, 15, 25, 0.65); border-left: 4px solid #ef4444; padding: 12px 14px; border-radius: 10px; margin-bottom: 10px; font-size: 0.92rem; }
+.rev-item.good { border-left-color: #10b981; }
+.rev-q { font-weight: 700; margin-bottom: 5px; color: #f8fafc; }
 
 .pbar { width: 100%; height: 6px; background: #1b2438; border-radius: 99px; overflow: hidden; margin-bottom: 16px; }
 .pfill { height: 100%; background: linear-gradient(90deg, #6366f1, #a855f7); transition: width 0.3s; }
@@ -87,5 +63,5 @@ input, select { width: 100%; padding: 13px; margin-bottom: 12px; background: #0b
 canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 99; }
 
 @media (max-width: 480px) {
-  #q-opts { grid-template-columns: 1fr !important; }
+  #q-opts, .grid2 { grid-template-columns: 1fr !important; }
 }
