@@ -43,17 +43,25 @@
             align-items: center;
         }
 
-        .brand { font-size: 1.55rem; font-weight: 800; color: var(--text-main); text-decoration: none; letter-spacing: -0.5px; }
+        .brand { font-size: 1.55rem; font-weight: 800; color: var(--text-main); text-decoration: none; cursor: pointer; }
         .brand span { color: var(--primary); }
 
-        .nav-badge {
-            background: rgba(99, 102, 241, 0.15);
-            color: #a5b4fc;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
+        .role-switcher { display: flex; gap: 10px; }
+        .role-btn {
+            background: var(--bg-surface);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.88rem;
             font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .role-btn.active, .role-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border-color: var(--primary);
         }
 
         .main-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; padding: 30px 20px; }
@@ -64,52 +72,64 @@
             border-radius: 24px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             width: 100%;
-            max-width: 650px;
-            padding: 40px;
+            max-width: 660px;
+            padding: 38px;
         }
 
         .hero-section { text-align: center; }
-        .hero-title { font-size: 1.95rem; font-weight: 800; margin-bottom: 12px; line-height: 1.25; }
-        .hero-desc { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 28px; line-height: 1.6; }
+        .hero-title { font-size: 1.85rem; font-weight: 800; margin-bottom: 12px; line-height: 1.25; }
+        .hero-desc { color: var(--text-muted); font-size: 1rem; margin-bottom: 26px; line-height: 1.5; }
 
-        .input-group { max-width: 380px; margin: 0 auto 20px; text-align: left; }
-        .input-label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
+        .input-group { max-width: 420px; margin: 0 auto 16px; text-align: left; }
+        .input-label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); }
 
-        .clean-input {
+        .clean-input, .clean-select {
             width: 100%;
-            padding: 14px 16px;
+            padding: 13px 15px;
             background: var(--bg-surface);
             border: 1.5px solid var(--border-color);
             border-radius: 12px;
-            font-size: 1rem;
+            font-size: 0.98rem;
             color: var(--text-main);
             outline: none;
             transition: 0.2s;
         }
-
-        .clean-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+        .clean-input:focus, .clean-select:focus { border-color: var(--primary); }
 
         .primary-btn {
             background: var(--primary);
             color: #fff;
             border: none;
-            padding: 15px 36px;
+            padding: 14px 28px;
             font-size: 1rem;
             font-weight: 700;
             border-radius: 12px;
             cursor: pointer;
             transition: 0.2s;
             width: 100%;
-            max-width: 380px;
+            max-width: 420px;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
         }
-
         .primary-btn:hover { background: var(--primary-hover); }
 
+        .secondary-btn {
+            background: var(--bg-surface);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+        }
+        .secondary-btn:hover { border-color: var(--text-muted); }
+
+        /* Тест экраны */
         .top-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.92rem; font-weight: 600; color: var(--text-muted); }
         .timer-pill { background: var(--bg-surface); color: var(--text-main); padding: 6px 14px; border-radius: 10px; border: 1px solid var(--border-color); }
-
-        .progress-bar-bg { width: 100%; height: 8px; background: var(--bg-surface); border-radius: 99px; overflow: hidden; margin-bottom: 28px; }
+        .progress-bar-bg { width: 100%; height: 8px; background: var(--bg-surface); border-radius: 99px; overflow: hidden; margin-bottom: 26px; }
         .progress-bar-fill { height: 100%; width: 25%; background: linear-gradient(90deg, #6366f1, #8b5cf6); border-radius: 99px; transition: width 0.3s ease; }
 
         .question-heading { font-size: 1.35rem; font-weight: 700; margin-bottom: 22px; line-height: 1.45; }
@@ -120,7 +140,7 @@
             border: 1.5px solid var(--border-color);
             border-radius: 14px;
             padding: 15px 18px;
-            font-size: 1.05rem;
+            font-size: 1.02rem;
             font-weight: 500;
             color: var(--text-main);
             text-align: left;
@@ -130,67 +150,66 @@
             gap: 14px;
             transition: 0.2s;
         }
-
         .answer-item:hover:not(:disabled) { border-color: var(--primary); background: #222d45; }
 
         .letter-badge {
-            width: 34px;
-            height: 34px;
-            border-radius: 9px;
-            background: var(--bg-card);
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            font-weight: 700;
-            font-size: 0.9rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-shrink: 0;
+            width: 32px; height: 32px; border-radius: 8px; background: var(--bg-card); color: var(--text-muted);
+            border: 1px solid var(--border-color); font-weight: 700; font-size: 0.88rem;
+            display: flex; justify-content: center; align-items: center; flex-shrink: 0;
         }
 
         .answer-item.correct { background: var(--success-bg) !important; border-color: var(--success-border) !important; color: var(--success-text) !important; }
-        .answer-item.correct .letter-badge { background: var(--success-border); border-color: var(--success-border); color: #fff; }
         .answer-item.wrong { background: var(--error-bg) !important; border-color: var(--error-border) !important; color: var(--error-text) !important; }
-        .answer-item.wrong .letter-badge { background: var(--error-border); border-color: var(--error-border); color: #fff; }
 
+        /* Нәтиже экраны */
         .result-view { text-align: center; }
         .score-circle {
-            width: 135px;
-            height: 135px;
-            border-radius: 50%;
-            background: rgba(99, 102, 241, 0.12);
-            border: 4px solid var(--primary);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin: 24px auto;
+            width: 130px; height: 130px; border-radius: 50%; background: rgba(99, 102, 241, 0.12);
+            border: 4px solid var(--primary); display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 20px auto;
         }
+        .score-number { font-size: 2rem; font-weight: 800; color: #a5b4fc; }
+        .score-label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 420px; margin: 0 auto; }
 
-        .score-number { font-size: 2.1rem; font-weight: 800; color: #a5b4fc; }
-        .score-label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
+        /* Басқарушы панелі */
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+        .q-list { margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 18px; max-height: 240px; overflow-y: auto; text-align: left; }
+        .q-list-item {
+            background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 10px;
+            padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+        }
+        .del-btn {
+            background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 600; flex-shrink: 0;
+        }
+        .del-btn:hover { background: #ef4444; color: #fff; }
+
         .hidden { display: none; }
-        footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.85rem; }
+        footer { text-align: center; padding: 18px; color: var(--text-muted); font-size: 0.85rem; }
 
-        @media (max-width: 500px) {
-            .card-container { padding: 26px 20px; }
-            .hero-title { font-size: 1.55rem; }
-            .navbar { padding: 14px 20px; }
+        @media (max-width: 520px) {
+            .card-container { padding: 24px 18px; }
+            .admin-grid, .btn-row { grid-template-columns: 1fr; }
+            .navbar { padding: 14px 18px; }
         }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <a href="#" class="brand">brain<span>Up</span></a>
-        <div class="nav-badge">Онлайн тестілеу</div>
+        <div class="brand" onclick="goHome()">brain<span>Up</span></div>
+        <div class="role-switcher">
+            <button type="button" class="role-btn active" id="nav-student" onclick="goHome()">Қатысушы</button>
+            <button type="button" class="role-btn" id="nav-admin" onclick="openAdmin()">Басқарушы</button>
+        </div>
     </nav>
 
     <main class="main-wrapper">
         <div class="card-container">
+            <!-- 1. Қатысушы: Бастапқы экран -->
             <div id="start-screen" class="hero-section">
                 <h1 class="hero-title">Біліміңізді тексеріп, жаңа деңгейге көтеріліңіз</h1>
-                <p class="hero-desc">Қысқа әрі қызықты интерактивті сұрақтарға жауап беріп, өз нәтижеңізді бірден біліңіз.</p>
+                <p class="hero-desc" id="total-q-info">Қазір платформада 4 сұрақ дайын тұр.</p>
                 <div class="input-group">
                     <label class="input-label" for="player-name">Аты-жөніңіз</label>
                     <input type="text" id="player-name" class="clean-input" placeholder="Мысалы: Әлихан" maxlength="25">
@@ -198,39 +217,9 @@
                 <button type="button" class="primary-btn" onclick="startQuiz()">Тестті бастау</button>
             </div>
 
+            <!-- 2. Қатысушы: Сұрақтар экраны -->
             <div id="quiz-screen" class="hidden">
                 <div class="top-meta">
                     <span id="q-progress-text">Сұрақ 1 / 4</span>
                     <span class="timer-pill">⏱ <span id="timer">15</span> сек</span>
                 </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" id="progress-fill"></div>
-                </div>
-                <div class="question-heading" id="question-text"></div>
-                <div class="answers-stack" id="answers-container"></div>
-            </div>
-
-            <div id="result-screen" class="result-view hidden">
-                <h2 class="hero-title" id="result-greeting">Жарайсыз!</h2>
-                <p class="hero-desc">Тест сәтті аяқталды</p>
-                <div class="score-circle">
-                    <span class="score-number" id="final-score">0</span>
-                    <span class="score-label">ҰПАЙ</span>
-                </div>
-                <p id="stats-summary" style="margin-bottom: 25px; font-weight: 600;"></p>
-                <button type="button" class="primary-btn" onclick="location.reload()">Қайта тапсыру</button>
-            </div>
-        </div>
-    </main>
-
-    <footer>© 2026 brainUp — Интерактивті білім беру платформасы</footer>
-
-    <script>
-        const questions = [
-            { q: "Қазақстанның астанасы қай қала?", options: ["Алматы", "Астана", "Шымкент", "Түркістан"], correct: 1 },
-            { q: "Күн жүйесіндегі ең үлкен ғаламшар қалай аталады?", options: ["Марс", "Жер", "Юпитер", "Сатурн"], correct: 2 },
-            { q: "1 байт ақпаратта неше бит бар?", options: ["4 бит", "8 бит", "16 бит", "32 бит"], correct: 1 },
-            { q: "Абай Құнанбайұлы қай жылы дүниеге келді?", options: ["1845", "1835", "1855", "1865"], correct: 0 }
-        ];
-
-        const letters = ["A", "B", "C", "D"];
