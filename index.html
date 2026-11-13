@@ -1,225 +1,167 @@
 <!DOCTYPE html>
 <html lang="kk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>brainUp — Интерактивті білім платформасы</title>
-    <link href="https://googleapis.com" rel="stylesheet">
-    <style>
-        :root {
-            --bg-page: #0b0f19;
-            --bg-card: #131a2a;
-            --bg-surface: #1b2438;
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #243049;
-            --success-bg: rgba(16, 185, 129, 0.18);
-            --success-border: #10b981;
-            --success-text: #6ee7b7;
-            --error-bg: rgba(239, 68, 68, 0.18);
-            --error-border: #ef4444;
-            --error-text: #fca5a5;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-
-        body {
-            background: radial-gradient(circle at top center, #162038 0%, #0b0f19 70%);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .navbar {
-            background: rgba(19, 26, 42, 0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 16px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .brand { font-size: 1.55rem; font-weight: 800; color: var(--text-main); text-decoration: none; cursor: pointer; }
-        .brand span { color: var(--primary); }
-
-        .role-switcher { display: flex; gap: 10px; }
-        .role-btn {
-            background: var(--bg-surface);
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-size: 0.88rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .role-btn.active, .role-btn:hover {
-            background: rgba(99, 102, 241, 0.2);
-            color: #a5b4fc;
-            border-color: var(--primary);
-        }
-
-        .main-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; padding: 30px 20px; }
-
-        .card-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 660px;
-            padding: 38px;
-        }
-
-        .hero-section { text-align: center; }
-        .hero-title { font-size: 1.85rem; font-weight: 800; margin-bottom: 12px; line-height: 1.25; }
-        .hero-desc { color: var(--text-muted); font-size: 1rem; margin-bottom: 26px; line-height: 1.5; }
-
-        .input-group { max-width: 420px; margin: 0 auto 16px; text-align: left; }
-        .input-label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); }
-
-        .clean-input, .clean-select {
-            width: 100%;
-            padding: 13px 15px;
-            background: var(--bg-surface);
-            border: 1.5px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 0.98rem;
-            color: var(--text-main);
-            outline: none;
-            transition: 0.2s;
-        }
-        .clean-input:focus, .clean-select:focus { border-color: var(--primary); }
-
-        .primary-btn {
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            padding: 14px 28px;
-            font-size: 1rem;
-            font-weight: 700;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
-        }
-        .primary-btn:hover { background: var(--primary-hover); }
-
-        .secondary-btn {
-            background: var(--bg-surface);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 14px 28px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-            width: 100%;
-        }
-        .secondary-btn:hover { border-color: var(--text-muted); }
-
-        /* Тест экраны */
-        .top-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.92rem; font-weight: 600; color: var(--text-muted); }
-        .timer-pill { background: var(--bg-surface); color: var(--text-main); padding: 6px 14px; border-radius: 10px; border: 1px solid var(--border-color); }
-        .progress-bar-bg { width: 100%; height: 8px; background: var(--bg-surface); border-radius: 99px; overflow: hidden; margin-bottom: 26px; }
-        .progress-bar-fill { height: 100%; width: 25%; background: linear-gradient(90deg, #6366f1, #8b5cf6); border-radius: 99px; transition: width 0.3s ease; }
-
-        .question-heading { font-size: 1.35rem; font-weight: 700; margin-bottom: 22px; line-height: 1.45; }
-        .answers-stack { display: flex; flex-direction: column; gap: 12px; }
-
-        .answer-item {
-            background: var(--bg-surface);
-            border: 1.5px solid var(--border-color);
-            border-radius: 14px;
-            padding: 15px 18px;
-            font-size: 1.02rem;
-            font-weight: 500;
-            color: var(--text-main);
-            text-align: left;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            transition: 0.2s;
-        }
-        .answer-item:hover:not(:disabled) { border-color: var(--primary); background: #222d45; }
-
-        .letter-badge {
-            width: 32px; height: 32px; border-radius: 8px; background: var(--bg-card); color: var(--text-muted);
-            border: 1px solid var(--border-color); font-weight: 700; font-size: 0.88rem;
-            display: flex; justify-content: center; align-items: center; flex-shrink: 0;
-        }
-
-        .answer-item.correct { background: var(--success-bg) !important; border-color: var(--success-border) !important; color: var(--success-text) !important; }
-        .answer-item.wrong { background: var(--error-bg) !important; border-color: var(--error-border) !important; color: var(--error-text) !important; }
-
-        /* Нәтиже экраны */
-        .result-view { text-align: center; }
-        .score-circle {
-            width: 130px; height: 130px; border-radius: 50%; background: rgba(99, 102, 241, 0.12);
-            border: 4px solid var(--primary); display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 20px auto;
-        }
-        .score-number { font-size: 2rem; font-weight: 800; color: #a5b4fc; }
-        .score-label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); }
-        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 420px; margin: 0 auto; }
-
-        /* Басқарушы панелі */
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-        .q-list { margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 18px; max-height: 240px; overflow-y: auto; text-align: left; }
-        .q-list-item {
-            background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 10px;
-            padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px;
-        }
-        .del-btn {
-            background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3);
-            padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 600; flex-shrink: 0;
-        }
-        .del-btn:hover { background: #ef4444; color: #fff; }
-
-        .hidden { display: none; }
-        footer { text-align: center; padding: 18px; color: var(--text-muted); font-size: 0.85rem; }
-
-        @media (max-width: 520px) {
-            .card-container { padding: 24px 18px; }
-            .admin-grid, .btn-row { grid-template-columns: 1fr; }
-            .navbar { padding: 14px 18px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>brainUp</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
+  body{background:#0b0f19;color:#f8fafc;min-height:100vh;display:flex;flex-direction:column}
+  nav{background:#131a2a;border-bottom:1px solid #243049;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
+  .logo{font-size:1.5rem;font-weight:800;cursor:pointer}.logo span{color:#6366f1}
+  .tabs{display:flex;gap:8px}
+  .tab{background:#1b2438;color:#94a3b8;border:1px solid #243049;padding:8px 14px;border-radius:10px;font-weight:600;cursor:pointer}
+  .tab.on,.tab:hover{background:rgba(99,102,241,0.2);color:#a5b4fc;border-color:#6366f1}
+  main{flex:1;display:flex;justify-content:center;align-items:center;padding:20px}
+  .card{background:#131a2a;border:1px solid #243049;border-radius:20px;padding:32px;width:100%;max-width:600px;box-shadow:0 20px 40px rgba(0,0,0,0.4)}
+  h1,h2{margin-bottom:12px;text-align:center}
+  .sub{color:#94a3b8;text-align:center;margin-bottom:24px}
+  input,select{width:100%;padding:13px;margin-bottom:12px;background:#1b2438;border:1px solid #243049;border-radius:10px;color:#fff;font-size:1rem}
+  .btn{width:100%;padding:14px;background:#6366f1;color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer}
+  .btn:hover{background:#4f46e5}
+  .btn2{background:#1b2438;border:1px solid #243049}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .opt{width:100%;padding:14px;margin-top:10px;background:#1b2438;border:1px solid #243049;border-radius:12px;color:#fff;text-align:left;font-size:1rem;cursor:pointer}
+  .opt:hover:not(:disabled){border-color:#6366f1;background:#222d45}
+  .ok{background:rgba(16,185,129,0.2)!important;border-color:#10b981!important;color:#6ee7b7!important}
+  .no{background:rgba(239,68,68,0.2)!important;border-color:#ef4444!important;color:#fca5a5!important}
+  .item{background:#1b2438;padding:10px 14px;border-radius:10px;margin-top:8px;display:flex;justify-content:space-between;align-items:center;font-size:0.95rem}
+  .del{background:#ef4444;color:#fff;border:none;padding:5px 10px;border-radius:6px;cursor:pointer}
+  .hide{display:none}
+  @media(max-width:500px){.grid2{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
+<nav>
+  <div class="logo" onclick="show('v-home')">brain<span>Up</span></div>
+  <div class="tabs">
+    <button type="button" class="tab on" id="t-user" onclick="show('v-home')">Қатысушы</button>
+    <button type="button" class="tab" id="t-adm" onclick="authAdmin()">Басқарушы</button>
+  </div>
+</nav>
+<main>
+  <div class="card">
+    <div id="v-home">
+      <h1>Біліміңізді тексеріңіз</h1>
+      <p class="sub" id="q-info"></p>
+      <input type="text" id="uname" placeholder="Аты-жөніңіз...">
+      <button type="button" class="btn" onclick="startQuiz()">Тестті бастау</button>
+    </div>
 
-    <nav class="navbar">
-        <div class="brand" onclick="goHome()">brain<span>Up</span></div>
-        <div class="role-switcher">
-            <button type="button" class="role-btn active" id="nav-student" onclick="goHome()">Қатысушы</button>
-            <button type="button" class="role-btn" id="nav-admin" onclick="openAdmin()">Басқарушы</button>
-        </div>
-    </nav>
+    <div id="v-quiz" class="hide">
+      <div style="display:flex;justify-content:space-between;color:#94a3b8;margin-bottom:16px">
+        <span id="q-num"></span><span>⏱ <b id="sec">15</b> сек</span>
+      </div>
+      <h2 id="q-txt" style="text-align:left;margin-bottom:16px"></h2>
+      <div id="q-opts"></div>
+    </div>
 
-    <main class="main-wrapper">
-        <div class="card-container">
-            <!-- 1. Қатысушы: Бастапқы экран -->
-            <div id="start-screen" class="hero-section">
-                <h1 class="hero-title">Біліміңізді тексеріп, жаңа деңгейге көтеріліңіз</h1>
-                <p class="hero-desc" id="total-q-info">Қазір платформада 4 сұрақ дайын тұр.</p>
-                <div class="input-group">
-                    <label class="input-label" for="player-name">Аты-жөніңіз</label>
-                    <input type="text" id="player-name" class="clean-input" placeholder="Мысалы: Әлихан" maxlength="25">
-                </div>
-                <button type="button" class="primary-btn" onclick="startQuiz()">Тестті бастау</button>
-            </div>
+    <div id="v-res" class="hide" style="text-align:center">
+      <h2 id="r-hi"></h2>
+      <h1 id="r-pts" style="color:#818cf8;font-size:2.5rem;margin:16px 0"></h1>
+      <p id="r-stat" class="sub"></p>
+      <div class="grid2">
+        <button type="button" class="btn" onclick="startQuiz()">Қайталау</button>
+        <button type="button" class="btn btn2" onclick="show('v-home')">Жабу</button>
+      </div>
+    </div>
 
-            <!-- 2. Қатысушы: Сұрақтар экраны -->
-            <div id="quiz-screen" class="hidden">
-                <div class="top-meta">
-                    <span id="q-progress-text">Сұрақ 1 / 4</span>
-                    <span class="timer-pill">⏱ <span id="timer">15</span> сек</span>
-                </div>
+    <div id="v-adm" class="hide">
+      <h2 style="text-align:left">Сұрақ құрастырушы</h2>
+      <input type="text" id="nq" placeholder="Сұрақ мәтіні...">
+      <div class="grid2">
+        <input type="text" id="o0" placeholder="A нұсқасы">
+        <input type="text" id="o1" placeholder="B нұсқасы">
+        <input type="text" id="o2" placeholder="C нұсқасы">
+        <input type="text" id="o3" placeholder="D нұсқасы">
+      </div>
+      <select id="nc">
+        <option value="0">Дұрыс жауап: A</option>
+        <option value="1">Дұрыс жауап: B</option>
+        <option value="2">Дұрыс жауап: C</option>
+        <option value="3">Дұрыс жауап: D</option>
+      </select>
+      <button type="button" class="btn" onclick="addQ()">+ Сұрақ қосу</button>
+      <div id="adm-list" style="margin-top:16px;max-height:220px;overflow-y:auto"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const defQ=[
+  {q:"Қазақстанның астанасы қай қала?",o:["Алматы","Астана","Шымкент","Түркістан"],c:1},
+  {q:"Ең үлкен ғаламшар қалай аталады?",o:["Марс","Жер","Юпитер","Сатурн"],c:2},
+  {q:"1 байтта неше бит бар?",o:["4 бит","8 бит","16 бит","32 бит"],c:1},
+  {q:"Абай Құнанбайұлы қай жылы туған?",o:["1845","1835","1855","1865"],c:0}
+];
+let qs=JSON.parse(localStorage.getItem("bu_q"))||defQ;
+let idx=0,pts=0,ok=0,t=15,tm,usr="",lock=false;
+
+function show(id){
+  clearInterval(tm);
+  ["v-home","v-quiz","v-res","v-adm"].forEach(v=>document.getElementById(v).classList.add("hide"));
+  document.getElementById(id).classList.remove("hide");
+  document.getElementById("t-user").classList.toggle("on",id!=="v-adm");
+  document.getElementById("t-adm").classList.toggle("on",id==="v-adm");
+  document.getElementById("q-info").innerText=`Қазір платформада ${qs.length} сұрақ дайын тұр.`;
+}
+show("v-home");
+
+function authAdmin(){
+  if(prompt("Құпиясөз (1234):")==="1234"){show("v-adm");renderAdm();}
+}
+function renderAdm(){
+  const box=document.getElementById("adm-list");box.innerHTML="";
+  qs.forEach((x,i)=>{
+    box.innerHTML+=`<div class="item"><span>${i+1}. ${x.q} <b>(${"ABCD"[x.c]})</b></span><button class="del" onclick="delQ(${i})">Өшіру</button></div>`;
+  });
+}
+function addQ(){
+  const q=document.getElementById("nq").value.trim();
+  const o=[0,1,2,3].map(i=>document.getElementById("o"+i).value.trim());
+  const c=+document.getElementById("nc").value;
+  if(!q||o.some(x=>!x))return alert("Барлық жолды толтырыңыз!");
+  qs.push({q,o,c});localStorage.setItem("bu_q",JSON.stringify(qs));
+  ["nq","o0","o1","o2","o3"].forEach(i=>document.getElementById(i).value="");
+  renderAdm();
+}
+function delQ(i){
+  if(qs.length<=1)return alert("Кемінде 1 сұрақ қалуы керек!");
+  qs.splice(i,1);localStorage.setItem("bu_q",JSON.stringify(qs));renderAdm();
+}
+function startQuiz(){
+  usr=document.getElementById("uname").value.trim()||"Қонақ";
+  idx=0;pts=0;ok=0;show("v-quiz");nextQ();
+}
+function nextQ(){
+  clearInterval(tm);lock=false;t=15;
+  document.getElementById("sec").innerText=t;
+  document.getElementById("q-num").innerText=`Сұрақ ${idx+1} / ${qs.length}`;
+  document.getElementById("q-txt").innerText=qs[idx].q;
+  const box=document.getElementById("q-opts");box.innerHTML="";
+  qs[idx].o.forEach((txt,i)=>{
+    const b=document.createElement("button");b.type="button";b.className="opt";
+    b.innerText=`${"ABCD"[i]}) ${txt}`;b.onclick=()=>pick(i);box.appendChild(b);
+  });
+  tm=setInterval(()=>{t--;document.getElementById("sec").innerText=t;if(t<=0){clearInterval(tm);pick(-1);}},1000);
+}
+function pick(sel){
+  if(lock)return;lock=true;clearInterval(tm);
+  const cor=qs[idx].c;
+  document.querySelectorAll(".opt").forEach((b,i)=>{
+    b.disabled=true;if(i===cor)b.classList.add("ok");else if(i===sel)b.classList.add("no");
+  });
+  if(sel===cor){ok++;pts+=100+t*10;}
+  setTimeout(()=>{
+    idx++;if(idx<qs.length)nextQ();
+    else{
+      show("v-res");
+      document.getElementById("r-hi").innerText=`Жарайсыз, ${usr}!`;
+      document.getElementById("r-pts").innerText=`${pts} ұпай`;
+      document.getElementById("r-stat").innerText=`${qs.length} сұрақтың ${ok}-іне дұрыс жауап бердіңіз`;
+    }
+  },900);
+}
+</script>
+</body>
+</html>
