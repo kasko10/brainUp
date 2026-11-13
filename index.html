@@ -36,7 +36,7 @@
   <div class="logo" onclick="show('v-home')">brain<span>Up</span></div>
   <div class="tabs">
     <button type="button" class="tab on" id="t-user" onclick="show('v-home')">Қатысушы</button>
-    <button type="button" class="tab" id="t-adm" onclick="authAdmin()">Басқарушы</button>
+    <button type="button" class="tab" id="t-adm" onclick="show('v-login')">Басқарушы</button>
   </div>
 </nav>
 <main>
@@ -46,6 +46,13 @@
       <p class="sub" id="q-info"></p>
       <input type="text" id="uname" placeholder="Аты-жөніңіз...">
       <button type="button" class="btn" onclick="startQuiz()">Тестті бастау</button>
+    </div>
+
+    <div id="v-login" class="hide">
+      <h2>Басқарушы бөлімі</h2>
+      <p class="sub">Құпиясөзді енгізіңіз (әдепкі: 1234)</p>
+      <input type="password" id="apass" placeholder="Құпиясөз...">
+      <button type="button" class="btn" onclick="checkPass()">Кіру</button>
     </div>
 
     <div id="v-quiz" class="hide">
@@ -99,29 +106,36 @@ let idx=0,pts=0,ok=0,t=15,tm,usr="",lock=false;
 
 function show(id){
   clearInterval(tm);
-  ["v-home","v-quiz","v-res","v-adm"].forEach(v=>document.getElementById(v).classList.add("hide"));
+  ["v-home","v-login","v-quiz","v-res","v-adm"].forEach(v=>document.getElementById(v).classList.add("hide"));
   document.getElementById(id).classList.remove("hide");
-  document.getElementById("t-user").classList.toggle("on",id!=="v-adm");
-  document.getElementById("t-adm").classList.toggle("on",id==="v-adm");
-  document.getElementById("q-info").innerText=`Қазір платформада ${qs.length} сұрақ дайын тұр.`;
+  document.getElementById("t-user").classList.toggle("on",id!=="v-adm"&&id!=="v-login");
+  document.getElementById("t-adm").classList.toggle("on",id==="v-adm"||id==="v-login");
+  document.getElementById("q-info").innerText="Қазір платформада "+qs.length+" сұрақ дайын тұр.";
 }
 show("v-home");
 
-function authAdmin(){
-  if(prompt("Құпиясөз (1234):")==="1234"){show("v-adm");renderAdm();}
+function checkPass(){
+  if(document.getElementById("apass").value==="1234"){
+    document.getElementById("apass").value="";
+    show("v-adm");renderAdm();
+  }else{alert("Құпиясөз қате!");}
 }
 function renderAdm(){
   const box=document.getElementById("adm-list");box.innerHTML="";
   qs.forEach((x,i)=>{
-    box.innerHTML+=`<div class="item"><span>${i+1}. ${x.q} <b>(${"ABCD"[x.c]})</b></span><button class="del" onclick="delQ(${i})">Өшіру</button></div>`;
+    box.innerHTML+='<div class="item"><span>'+(i+1)+'. '+x.q+' <b>('+"ABCD"[x.c]+')</b></span><button class="del" onclick="delQ('+i+')">Өшіру</button></div>';
   });
 }
 function addQ(){
   const q=document.getElementById("nq").value.trim();
-  const o=[0,1,2,3].map(i=>document.getElementById("o"+i).value.trim());
-  const c=+document.getElementById("nc").value;
-  if(!q||o.some(x=>!x))return alert("Барлық жолды толтырыңыз!");
-  qs.push({q,o,c});localStorage.setItem("bu_q",JSON.stringify(qs));
+  const o0=document.getElementById("o0").value.trim();
+  const o1=document.getElementById("o1").value.trim();
+  const o2=document.getElementById("o2").value.trim();
+  const o3=document.getElementById("o3").value.trim();
+  const c=Number(document.getElementById("nc").value);
+  if(!q||!o0||!o1||!o2||!o3)return alert("Барлық жолды толтырыңыз!");
+  qs.push({q:q,o:[o0,o1,o2,o3],c:c});
+  localStorage.setItem("bu_q",JSON.stringify(qs));
   ["nq","o0","o1","o2","o3"].forEach(i=>document.getElementById(i).value="");
   renderAdm();
 }
@@ -136,12 +150,12 @@ function startQuiz(){
 function nextQ(){
   clearInterval(tm);lock=false;t=15;
   document.getElementById("sec").innerText=t;
-  document.getElementById("q-num").innerText=`Сұрақ ${idx+1} / ${qs.length}`;
+  document.getElementById("q-num").innerText="Сұрақ "+(idx+1)+" / "+qs.length;
   document.getElementById("q-txt").innerText=qs[idx].q;
   const box=document.getElementById("q-opts");box.innerHTML="";
   qs[idx].o.forEach((txt,i)=>{
     const b=document.createElement("button");b.type="button";b.className="opt";
-    b.innerText=`${"ABCD"[i]}) ${txt}`;b.onclick=()=>pick(i);box.appendChild(b);
+    b.innerText="ABCD"[i]+") "+txt;b.onclick=()=>pick(i);box.appendChild(b);
   });
   tm=setInterval(()=>{t--;document.getElementById("sec").innerText=t;if(t<=0){clearInterval(tm);pick(-1);}},1000);
 }
@@ -156,9 +170,9 @@ function pick(sel){
     idx++;if(idx<qs.length)nextQ();
     else{
       show("v-res");
-      document.getElementById("r-hi").innerText=`Жарайсыз, ${usr}!`;
-      document.getElementById("r-pts").innerText=`${pts} ұпай`;
-      document.getElementById("r-stat").innerText=`${qs.length} сұрақтың ${ok}-іне дұрыс жауап бердіңіз`;
+      document.getElementById("r-hi").innerText="Жарайсыз, "+usr+"!";
+      document.getElementById("r-pts").innerText=pts+" ұпай";
+      document.getElementById("r-stat").innerText=qs.length+" сұрақтың "+ok+"-іне дұрыс жауап бердіңіз";
     }
   },900);
 }
