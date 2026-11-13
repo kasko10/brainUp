@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>brainUp</title>
-<link rel="stylesheet" href="style.css?v=12">
+<link rel="stylesheet" href="style.css?v=20">
 <style>
   #q-opts { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; width: 100% !important; }
   #q-opts .opt { width: 100% !important; margin: 0 !important; min-height: 82px !important; padding: 34px 10px 12px 10px !important; font-size: 0.92rem !important; display: flex !important; align-items: flex-end !important; word-break: break-word !important; }
@@ -15,8 +15,8 @@
 <nav>
   <div class="logo" onclick="show('v-home')">brain<span>Up</span></div>
   <div class="tabs">
-    <button class="tab on" id="t-user" onclick="show('v-home')">Қатысушы</button>
-    <button class="tab" id="t-adm" onclick="openStudio()">Конструктор</button>
+    <button type="button" class="tab on" id="t-user" onclick="show('v-home')">Қатысушы</button>
+    <button type="button" class="tab" id="t-adm" onclick="show('v-login')">Конструктор</button>
   </div>
 </nav>
 <main>
@@ -25,13 +25,13 @@
       <h1>Біліміңізді тексеріңіз</h1>
       <p class="sub" id="q-info"></p>
       <input type="text" id="uname" placeholder="Аты-жөніңіз...">
-      <button class="btn" onclick="startQuiz()">Тестті бастау →</button>
+      <button type="button" class="btn" onclick="startQuiz()">Тестті бастау →</button>
     </div>
     <div id="v-login" class="hide">
       <h2>🔒 Конструкторға кіру</h2>
       <p class="sub" id="lock-msg">Жүйеге кіру үшін құпиясөзді енгізіңіз</p>
       <input type="password" id="apass" placeholder="Құпиясөз...">
-      <button class="btn" id="login-btn" onclick="checkPass()">Растау және кіру</button>
+      <button type="button" class="btn" id="login-btn" onclick="checkPass()">Растау және кіру</button>
     </div>
     <div id="v-quiz" class="hide">
       <div style="display:flex;justify-content:space-between;color:#94a3b8;margin-bottom:10px">
@@ -47,14 +47,14 @@
       <p id="r-stat" class="sub" style="margin-bottom:12px"></p>
       <div id="review-list" style="margin:15px 0 20px;max-height:240px;overflow-y:auto"></div>
       <div class="grid2">
-        <button class="btn" onclick="startQuiz()">Қайталау</button>
-        <button class="btn btn2" onclick="show('v-home')">Жабу</button>
+        <button type="button" class="btn" onclick="startQuiz()">Қайталау</button>
+        <button type="button" class="btn btn2" onclick="show('v-home')">Жабу</button>
       </div>
     </div>
     <div id="v-adm" class="hide">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
         <h2 style="margin:0;text-align:left">Сұрақтар конструкторы</h2>
-        <button class="tab" onclick="logoutStudio()">Шығу 🔒</button>
+        <button type="button" class="tab" onclick="logoutStudio()">Шығу 🔒</button>
       </div>
       <input type="text" id="nq" placeholder="Сұрақ мәтіні...">
       <div class="grid2">
@@ -65,8 +65,8 @@
         <option value="0">Дұрыс жауап: A</option><option value="1">Дұрыс жауап: B</option>
         <option value="2">Дұрыс жауап: C</option><option value="3">Дұрыс жауап: D</option>
       </select>
-      <button class="btn" onclick="addQ()">+ Сұрақты қосу</button>
-      <button class="btn" style="background:#10b981;margin-top:10px" onclick="shareQuiz()">🔗 Сұрақтар сілтемесін көшіру</button>
+      <button type="button" class="btn" onclick="addQ()">+ Сұрақты қосу</button>
+      <button type="button" class="btn" style="background:#10b981;margin-top:10px" onclick="shareQuiz()">🔗 Сұрақтар сілтемесін көшіру</button>
       <div id="adm-list" style="margin-top:14px;max-height:200px;overflow-y:auto"></div>
     </div>
   </div>
@@ -75,6 +75,6 @@
     <div id="l-list"></div>
   </div>
 </main>
-<script src="script.js?v=15"></script>
+<script src="script.js?v=20"></script>
 </body>
 </html>
