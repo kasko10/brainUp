@@ -1,73 +1,128 @@
-<!DOCTYPE html>
-<html lang="kk">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>brainUp</title>
-<link rel="stylesheet" href="style.css?v=3">
-</head>
-<body>
-<div class="orb o1"></div><div class="orb o2"></div><canvas id="cv"></canvas>
-<nav>
-  <div class="logo" onclick="show('v-home')">brain<span>Up</span></div>
-  <div class="tabs">
-    <button class="tab on" id="t-user" onclick="show('v-home')">Қатысушы</button>
-    <button class="tab" id="t-adm" onclick="show('v-login')">Басқарушы</button>
-  </div>
-</nav>
-<main>
-  <div class="card">
-    <div id="v-home">
-      <h1>Біліміңізді тексеріңіз</h1>
-      <p class="sub" id="q-info"></p>
-      <input type="text" id="uname" placeholder="Аты-жөніңіз...">
-      <button class="btn" onclick="startQuiz()">Тестті бастау →</button>
-    </div>
-    <div id="v-login" class="hide">
-      <h2>Басқарушы бөлімі</h2>
-      <p class="sub">Құпиясөзді енгізіңіз (әдепкі: 1234)</p>
-      <input type="password" id="apass" placeholder="Құпиясөз...">
-      <button class="btn" onclick="checkPass()">Кіру</button>
-    </div>
-    <div id="v-quiz" class="hide">
-      <div style="display:flex;justify-content:space-between;color:#94a3b8;margin-bottom:10px">
-        <span id="q-num"></span><span>⏱ <b id="sec">15</b> сек</span>
-      </div>
-      <div class="pbar"><div class="pfill" id="pfill"></div></div>
-      <h2 id="q-txt" style="text-align:left;margin-bottom:14px"></h2>
-      <div id="q-opts"></div>
-    </div>
-    <div id="v-res" class="hide" style="text-align:center">
-      <h2 id="r-hi"></h2>
-      <h1 id="r-pts" style="color:#a5b4fc;font-size:2.5rem;margin:10px 0"></h1>
-      <p id="r-stat" class="sub" style="margin-bottom:10px"></p>
-      <div class="review-box" id="review-list"></div>
-      <div class="grid2">
-        <button class="btn" onclick="startQuiz()">Қайталау</button>
-        <button class="btn btn2" onclick="show('v-home')">Жабу</button>
-      </div>
-    </div>
-    <div id="v-adm" class="hide">
-      <h2 style="text-align:left">Сұрақ құрастырушы</h2>
-      <input type="text" id="nq" placeholder="Сұрақ мәтіні...">
-      <div class="grid2">
-        <input type="text" id="o0" placeholder="A нұсқасы"><input type="text" id="o1" placeholder="B нұсқасы">
-        <input type="text" id="o2" placeholder="C нұсқасы"><input type="text" id="o3" placeholder="D нұсқасы">
-      </div>
-      <select id="nc">
-        <option value="0">Дұрыс жауап: A</option><option value="1">Дұрыс жауап: B</option>
-        <option value="2">Дұрыс жауап: C</option><option value="3">Дұрыс жауап: D</option>
-      </select>
-      <button class="btn" onclick="addQ()">+ Сұрақты қосу</button>
-      <button class="btn btn-share" onclick="shareQuiz()">🔗 Сұрақтар сілтемесін көшіру</button>
-      <div id="adm-list" style="margin-top:14px;max-height:200px;overflow-y:auto"></div>
-    </div>
-  </div>
-  <div class="board" id="board">
-    <div style="font-size:0.85rem;color:#94a3b8;font-weight:700;margin-bottom:8px">🏆 ҮЗДІК НӘТИЖЕЛЕР</div>
-    <div id="l-list"></div>
-  </div>
-</main>
-<script src="script.js?v=3"></script>
-</body>
-</html>
+const defQ = [
+  { q: "Қазақстанның астанасы қай қала?", o: ["Алматы", "Астана", "Шымкент", "Түркістан"], c: 1 },
+  { q: "Ең үлкен ғаламшар қалай аталады?", o: ["Марс", "Жер", "Юпитер", "Сатурн"], c: 2 },
+  { q: "1 байтта неше бит бар?", o: ["4 бит", "8 бит", "16 бит", "32 бит"], c: 1 },
+  { q: "Абай Құнанбайұлы қай жылы туған?", o: ["1845", "1835", "1855", "1865"], c: 0 }
+];
+
+function loadShared() {
+  try {
+    const p = new URLSearchParams(window.location.search).get("q");
+    if (p) return JSON.parse(decodeURIComponent(escape(atob(p))));
+  } catch (e) {}
+  return null;
+}
+
+const sharedQ = loadShared();
+let qs = sharedQ || JSON.parse(localStorage.getItem("bu_q")) || defQ;
+let leads = JSON.parse(localStorage.getItem("bu_l")) || [{ n: "Әлихан", s: 520 }, { n: "Айзере", s: 440 }];
+let idx = 0, pts = 0, ok = 0, t = 15, tm, usr = "", lock = false, log = [];
+
+function show(id) {
+  clearInterval(tm);
+  ["v-home", "v-login", "v-quiz", "v-res", "v-adm"].forEach(v => document.getElementById(v).classList.add("hide"));
+  document.getElementById(id).classList.remove("hide");
+  document.getElementById("board").classList.toggle("hide", id !== "v-home");
+  document.getElementById("t-user").classList.toggle("on", id !== "v-adm" && id !== "v-login");
+  document.getElementById("t-adm").classList.toggle("on", id === "v-adm" || id === "v-login");
+  document.getElementById("q-info").innerText = (sharedQ ? "🔗 Арнайы сілтемедегі тест: " : "Платформада ") + qs.length + " сұрақ дайын";
+  const b = document.getElementById("l-list"); b.innerHTML = "";
+  leads.slice(0, 3).forEach((x, i) => b.innerHTML += `<div class="row"><span>${i + 1}. ${x.n}</span><b>${x.s} ұпай</b></div>`);
+}
+show("v-home");
+
+function checkPass() {
+  if (document.getElementById("apass").value === "1234") {
+    document.getElementById("apass").value = ""; show("v-adm"); renderAdm();
+  } else alert("Құпиясөз қате! (1234)");
+}
+
+function renderAdm() {
+  const b = document.getElementById("adm-list"); b.innerHTML = "";
+  qs.forEach((x, i) => b.innerHTML += `<div class="item"><span>${i + 1}. ${x.q} <b>(${"ABCD"[x.c]})</b></span><button class="del" onclick="delQ(${i})">Өшіру</button></div>`);
+}
+
+function addQ() {
+  const q = document.getElementById("nq").value.trim();
+  const o0 = document.getElementById("o0").value.trim(), o1 = document.getElementById("o1").value.trim();
+  const o2 = document.getElementById("o2").value.trim(), o3 = document.getElementById("o3").value.trim();
+  if (!q || !o0 || !o1 || !o2 || !o3) return alert("Барлық жолды толтырыңыз!");
+  qs.push({ q, o: [o0, o1, o2, o3], c: Number(document.getElementById("nc").value) });
+  localStorage.setItem("bu_q", JSON.stringify(qs));
+  ["nq", "o0", "o1", "o2", "o3"].forEach(i => document.getElementById(i).value = ""); renderAdm();
+}
+
+function delQ(i) {
+  if (qs.length <= 1) return alert("Кемінде 1 сұрақ қалуы керек!");
+  qs.splice(i, 1); localStorage.setItem("bu_q", JSON.stringify(qs)); renderAdm();
+}
+
+function shareQuiz() {
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(qs))));
+  const url = window.location.origin + window.location.pathname + "?q=" + encoded;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => alert("✅ Сілтеме көшірілді! WhatsApp немесе Telegram-ға жібере аласыз."));
+  } else {
+    prompt("Сілтемені көшіріп алыңыз:", url);
+  }
+}
+
+function startQuiz() {
+  usr = document.getElementById("uname").value.trim() || usr || "Қонақ";
+  idx = 0; pts = 0; ok = 0; log = []; show("v-quiz"); nextQ();
+}
+
+function nextQ() {
+  clearInterval(tm); lock = false; t = 15;
+  document.getElementById("sec").innerText = t;
+  document.getElementById("q-num").innerText = `Сұрақ ${idx + 1} / ${qs.length}`;
+  document.getElementById("pfill").style.width = ((idx + 1) / qs.length * 100) + "%";
+  document.getElementById("q-txt").innerText = qs[idx].q;
+  const b = document.getElementById("q-opts"); b.innerHTML = "";
+  qs[idx].o.forEach((txt, i) => {
+    const btn = document.createElement("button"); btn.className = "opt";
+    btn.innerText = txt; btn.onclick = () => pick(i); b.appendChild(btn);
+  });
+  tm = setInterval(() => { t--; document.getElementById("sec").innerText = t; if (t <= 0) { clearInterval(tm); pick(-1); } }, 1000);
+}
+
+function pick(sel) {
+  if (lock) return; lock = true; clearInterval(tm);
+  const item = qs[idx], cor = item.c;
+  document.querySelectorAll(".opt").forEach((b, i) => { b.disabled = true; if (i === cor) b.classList.add("ok"); else if (i === sel) b.classList.add("no"); });
+  const isRight = (sel === cor);
+  if (isRight) { ok++; pts += 100 + t * 10; }
+  log.push({ q: item.q, u: sel >= 0 ? item.o[sel] : "Уақыт бітті ⏱", c: item.o[cor], right: isRight });
+
+  setTimeout(() => {
+    idx++; if (idx < qs.length) nextQ();
+    else finish();
+  }, 850);
+}
+
+function finish() {
+  leads.unshift({ n: usr, s: pts }); leads.sort((a, b) => b.s - a.s);
+  localStorage.setItem("bu_l", JSON.stringify(leads.slice(0, 5)));
+  show("v-res");
+  document.getElementById("r-hi").innerText = "Жарайсыз, " + usr + "!";
+  document.getElementById("r-pts").innerText = pts + " ұпай";
+  document.getElementById("r-stat").innerText = `${qs.length} сұрақтың ${ok}-і дұрыс`;
+
+  const rev = document.getElementById("review-list");
+  rev.innerHTML = "<div style='font-weight:700;margin-bottom:10px;color:#a5b4fc'>📋 Қателермен жұмыс:</div>";
+  log.forEach((h, i) => {
+    rev.innerHTML += `<div style="background:#0b0f19;border-left:4px solid ${h.right ? '#10b981' : '#ef4444'};padding:10px 14px;border-radius:8px;margin-bottom:8px;text-align:left;font-size:0.92rem">
+      <div style="font-weight:700;margin-bottom:4px">${i + 1}. ${h.q}</div>
+      <div style="color:${h.right ? '#6ee7b7' : '#fca5a5'}">Сіздің жауабыңыз: <b>${h.u}</b></div>
+      ${!h.right ? `<div style="color:#6ee7b7">Дұрыс жауап: <b>${h.c}</b></div>` : ''}
+    </div>`;
+  });
+  if (ok > 0) confetti();
+}
+
+function confetti() {
+  const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
+  cv.width = innerWidth; cv.height = innerHeight;
+  let p = Array.from({ length: 60 }, () => ({ x: Math.random() * cv.width, y: -20, r: Math.random() * 6 + 3, c: ["#6366f1", "#a855f7", "#10b981", "#f59e0b"][Math.floor(Math.random() * 4)], v: Math.random() * 4 + 2 }));
+  let f = 0; (function d() { ctx.clearRect(0, 0, cv.width, cv.height); p.forEach(i => { i.y += i.v; ctx.fillStyle = i.c; ctx.beginPath(); ctx.arc(i.x, i.y, i.r, 0, 7); ctx.fill(); }); if (++f < 90) requestAnimationFrame(d); else ctx.clearRect(0, 0, cv.width, cv.height); })();
+}
