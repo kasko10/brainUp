@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>brainUp</title>
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 <div class="orb o1"></div><div class="orb o2"></div><canvas id="cv"></canvas>
@@ -40,8 +40,8 @@
     <div id="v-res" class="hide" style="text-align:center">
       <h2 id="r-hi"></h2>
       <h1 id="r-pts" style="color:#a5b4fc;font-size:2.5rem;margin:10px 0"></h1>
-      <p id="r-stat" class="sub" style="margin-bottom:10px"></p>
-      <div class="review-box" id="review-list"></div>
+      <p id="r-stat" class="sub" style="margin-bottom:12px"></p>
+      <div id="review-list" style="margin:15px 0 20px;max-height:240px;overflow-y:auto"></div>
       <div class="grid2">
         <button class="btn" onclick="startQuiz()">Қайталау</button>
         <button class="btn btn2" onclick="show('v-home')">Жабу</button>
@@ -59,7 +59,7 @@
         <option value="2">Дұрыс жауап: C</option><option value="3">Дұрыс жауап: D</option>
       </select>
       <button class="btn" onclick="addQ()">+ Сұрақты қосу</button>
-      <button class="btn" style="background:#10b981; margin-top:10px;" onclick="shareQuiz()">🔗 Сұрақтар сілтемесін көшіру</button>
+      <button class="btn" style="background:#10b981;margin-top:10px" onclick="shareQuiz()">🔗 Сұрақтар сілтемесін көшіру</button>
       <div id="adm-list" style="margin-top:14px;max-height:200px;overflow-y:auto"></div>
     </div>
   </div>
@@ -68,6 +68,6 @@
     <div id="l-list"></div>
   </div>
 </main>
-<script src="script.js?v=4"></script>
+<script src="script.js?v=5"></script>
 </body>
 </html>
