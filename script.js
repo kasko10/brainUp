@@ -5,15 +5,8 @@ const defQ = [
   { q: "Абай Құнанбайұлы қай жылы туған?", o: ["1845", "1835", "1855", "1865"], c: 0 }
 ];
 
-const SECRET_HASH = "e719c264ef1d9319c7e4e2a50a31a2fc57379f44d2a1b43b155770415c9b8b49";
-let isAuth = false;
-let fails = 0;
-let lockUntil = Number(localStorage.getItem("bu_lock")) || 0;
-
-async function sha256(str) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
-}
+let isAuth = false, fails = 0;
+let lockUntil = Number(localStorage.getItem("bu_lock_v4")) || 0;
 
 function loadShared() {
   try {
@@ -44,20 +37,14 @@ function show(id) {
 }
 show("v-home");
 
-function logoutStudio() {
-  isAuth = false;
-  show("v-home");
-}
+function logoutStudio() { isAuth = false; show("v-home"); }
 
 function checkLockState() {
-  const now = Date.now();
-  const btn = document.getElementById("login-btn");
-  const msg = document.getElementById("lock-msg");
+  const now = Date.now(), btn = document.getElementById("login-btn"), msg = document.getElementById("lock-msg");
   if (lockUntil > now) {
     btn.disabled = true;
-    const sec = Math.ceil((lockUntil - now) / 1000);
     msg.style.color = "#fca5a5";
-    msg.innerText = `Қауіпсіздік бұғаты: ${sec} секунд күтіңіз`;
+    msg.innerText = `Қауіпсіздік бұғаты: ${Math.ceil((lockUntil - now) / 1000)} секунд күтіңіз`;
     setTimeout(checkLockState, 1000);
   } else {
     btn.disabled = false;
@@ -66,25 +53,15 @@ function checkLockState() {
   }
 }
 
-async function checkPass() {
+function checkPass() {
   if (Date.now() < lockUntil) return;
-  const val = document.getElementById("apass").value;
-  const hashed = await sha256(val);
-  if (hashed === SECRET_HASH) {
-    isAuth = true; fails = 0;
-    document.getElementById("apass").value = "";
-    show("v-adm");
+  const val = document.getElementById("apass").value.trim();
+  if (btoa(val) === "YnJhaW4yMDI2") {
+    isAuth = true; fails = 0; document.getElementById("apass").value = ""; show("v-adm");
   } else {
-    fails++;
-    document.getElementById("apass").value = "";
-    if (fails >= 3) {
-      lockUntil = Date.now() + 60000;
-      localStorage.setItem("bu_lock", lockUntil);
-      fails = 0;
-      checkLockState();
-    } else {
-      alert(`Құпиясөз қате! Қалған мүмкіндік: ${3 - fails}`);
-    }
+    fails++; document.getElementById("apass").value = "";
+    if (fails >= 3) { lockUntil = Date.now() + 60000; localStorage.setItem("bu_lock_v4", lockUntil); fails = 0; checkLockState(); }
+    else alert(`Құпиясөз қате! Қалған мүмкіндік: ${3 - fails}`);
   }
 }
 
@@ -115,11 +92,8 @@ function shareQuiz() {
   if (!isAuth) return show("v-login");
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(qs))));
   const url = window.location.origin + window.location.pathname + "?q=" + encoded;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => alert("✅ Сілтеме көшірілді!"));
-  } else {
-    prompt("Сілтемені көшіріп алыңыз:", url);
-  }
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => alert("✅ Сілтеме көшірілді!"));
+  else prompt("Сілтемені көшіріп алыңыз:", url);
 }
 
 function startQuiz() {
@@ -148,11 +122,7 @@ function pick(sel) {
   const isRight = (sel === cor);
   if (isRight) { ok++; pts += 100 + t * 10; }
   log.push({ q: item.q, u: sel >= 0 ? item.o[sel] : "Уақыт бітті ⏱", c: item.o[cor], right: isRight });
-
-  setTimeout(() => {
-    idx++; if (idx < qs.length) nextQ();
-    else finish();
-  }, 850);
+  setTimeout(() => { idx++; if (idx < qs.length) nextQ(); else finish(); }, 850);
 }
 
 function finish() {
@@ -162,7 +132,6 @@ function finish() {
   document.getElementById("r-hi").innerText = "Жарайсыз, " + usr + "!";
   document.getElementById("r-pts").innerText = pts + " ұпай";
   document.getElementById("r-stat").innerText = `${qs.length} сұрақтың ${ok}-і дұрыс`;
-
   const rev = document.getElementById("review-list");
   rev.innerHTML = "<div style='font-weight:700;margin-bottom:10px;color:#a5b4fc'>📋 Қателермен жұмыс:</div>";
   log.forEach((h, i) => {
