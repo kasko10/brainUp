@@ -113,7 +113,7 @@ const defQ=[
   {q:"1 байтта неше бит бар?",o:["4 бит","8 бит","16 бит","32 бит"],c:1},
   {q:"Абай Құнанбайұлы қай жылы туған?",o:["1845","1835","1855","1865"],c:0}
 ];
-let isAuth=false,fails=0,lockUntil=Number(localStorage.getItem("bu_lock_v5"))||0;
+let isAuth=false,fails=0,lockUntil=Number(localStorage.getItem("bu_lock_v8"))||0;
 function loadShared(){try{const p=new URLSearchParams(location.search).get("q");if(p)return JSON.parse(decodeURIComponent(escape(atob(p))))}catch(e){}return null}
 const sharedQ=loadShared();
 let qs=sharedQ||JSON.parse(localStorage.getItem("bu_q"))||defQ;
@@ -143,11 +143,11 @@ function checkLock(){
 }
 function checkPass(){
   if(Date.now()<lockUntil)return;
-  if(btoa(document.getElementById("apass").value.trim())==="YnJhaW4yMDI2"){
+  if(document.getElementById("apass").value.trim()==="brain2026"){
     isAuth=true;fails=0;document.getElementById("apass").value="";show("v-adm");
   }else{
     fails++;document.getElementById("apass").value="";
-    if(fails>=3){lockUntil=Date.now()+60000;localStorage.setItem("bu_lock_v5",lockUntil);fails=0;checkLock()}
+    if(fails>=3){lockUntil=Date.now()+60000;localStorage.setItem("bu_lock_v8",lockUntil);fails=0;checkLock()}
     else alert("Құпиясөз қате! Қалған мүмкіндік: "+(3-fails));
   }
 }
