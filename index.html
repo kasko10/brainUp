@@ -4,10 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>brainUp</title>
-<link rel="stylesheet" href="style.css?v=50">
 <style>
-  #q-opts { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; width: 100% !important; }
-  #q-opts .opt { width: 100% !important; margin: 0 !important; min-height: 82px !important; padding: 34px 10px 12px 10px !important; font-size: 0.92rem !important; display: flex !important; align-items: flex-end !important; word-break: break-word !important; }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
+  body{background:#070a13;color:#f8fafc;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+  .orb{position:fixed;border-radius:50%;filter:blur(90px);z-index:-1;opacity:.45;animation:fl 10s infinite alternate}
+  .o1{width:350px;height:350px;background:#4f46e5;top:-60px;left:-60px}
+  .o2{width:300px;height:300px;background:#7c3aed;bottom:-50px;right:-50px}
+  @keyframes fl{to{transform:translate(40px,30px) scale(1.1)}}
+  nav{background:rgba(15,21,36,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.1);padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
+  .logo{font-size:1.5rem;font-weight:800;cursor:pointer}.logo span{color:#6366f1}
+  .tabs{display:flex;gap:8px}
+  .tab{background:rgba(255,255,255,.05);color:#94a3b8;border:1px solid rgba(255,255,255,.1);padding:8px 14px;border-radius:10px;font-weight:600;cursor:pointer}
+  .tab.on,.tab:hover{background:rgba(99,102,241,.25);color:#c7d2fe;border-color:#6366f1}
+  main{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px 14px;gap:16px}
+  .card{background:rgba(19,26,42,.85);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:30px;width:100%;max-width:620px;box-shadow:0 20px 40px rgba(0,0,0,.5)}
+  h1,h2{margin-bottom:12px;text-align:center}
+  .sub{color:#94a3b8;text-align:center;margin-bottom:20px}
+  input,select{width:100%;padding:13px;margin-bottom:12px;background:#0b0f19;border:1px solid #243049;border-radius:10px;color:#fff;font-size:1rem}
+  .btn{width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer}
+  .btn2{background:#1b2438;border:1px solid #243049}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  #q-txt{background:rgba(11,15,25,.6);border:1px solid rgba(255,255,255,.07);padding:16px;border-radius:14px;font-size:1.15rem;margin-bottom:14px;text-align:left}
+  #q-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .opt{position:relative;min-height:80px;padding:32px 12px 12px;background:rgba(27,36,56,.8);border:1.5px solid rgba(255,255,255,.1);border-radius:14px;color:#fff;text-align:left;font-size:.95rem;font-weight:600;cursor:pointer;display:flex;align-items:flex-end;word-break:break-word}
+  .opt::before{position:absolute;top:8px;left:10px;width:22px;height:22px;border-radius:6px;background:rgba(99,102,241,.25);color:#a5b4fc;font-size:.75rem;font-weight:800;display:flex;justify-content:center;align-items:center}
+  .opt:nth-child(1)::before{content:"A"}.opt:nth-child(2)::before{content:"B"}.opt:nth-child(3)::before{content:"C"}.opt:nth-child(4)::before{content:"D"}
+  .ok{background:rgba(16,185,129,.25)!important;border-color:#10b981!important;color:#6ee7b7!important}
+  .no{background:rgba(239,68,68,.25)!important;border-color:#ef4444!important;color:#fca5a5!important}
+  .pbar{width:100%;height:6px;background:#1b2438;border-radius:99px;overflow:hidden;margin-bottom:14px}
+  .pfill{height:100%;background:#6366f1;transition:width .3s}
+  .item{background:#1b2438;padding:10px 14px;border-radius:10px;margin-top:8px;display:flex;justify-content:space-between;align-items:center}
+  .del{background:#ef4444;color:#fff;border:none;padding:5px 10px;border-radius:6px;cursor:pointer}
+  .board{width:100%;max-width:620px;background:rgba(19,26,42,.6);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:16px 22px}
+  .row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+  .hide{display:none!important}
+  canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:99}
 </style>
 </head>
 <body>
@@ -29,16 +60,16 @@
     </div>
     <div id="v-login" class="hide">
       <h2>🔒 Конструкторға кіру</h2>
-      <p class="sub" id="lock-msg">Жүйеге кіру үшін құпиясөзді енгізіңіз</p>
+      <p class="sub" id="lock-msg">Құпиясөзді енгізіңіз</p>
       <input type="password" id="apass" placeholder="Құпиясөз..." onkeydown="if(event.key==='Enter')checkPass()">
-      <button type="button" class="btn" id="login-btn" onclick="checkPass()">Растау және кіру</button>
+      <button type="button" class="btn" id="login-btn" onclick="checkPass()">Кіру</button>
     </div>
     <div id="v-quiz" class="hide">
       <div style="display:flex;justify-content:space-between;color:#94a3b8;margin-bottom:10px">
         <span id="q-num"></span><span>⏱ <b id="sec">15</b> сек</span>
       </div>
       <div class="pbar"><div class="pfill" id="pfill"></div></div>
-      <h2 id="q-txt" style="text-align:left;margin-bottom:14px"></h2>
+      <h2 id="q-txt"></h2>
       <div id="q-opts"></div>
     </div>
     <div id="v-res" class="hide" style="text-align:center">
@@ -54,7 +85,7 @@
     <div id="v-adm" class="hide">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
         <h2 style="margin:0;text-align:left">Сұрақтар конструкторы</h2>
-        <button type="button" class="tab" onclick="logoutStudio()">Шығу 🔒</button>
+        <button type="button" class="tab" onclick="isAuth=false;show('v-home')">Шығу 🔒</button>
       </div>
       <input type="text" id="nq" placeholder="Сұрақ мәтіні...">
       <div class="grid2">
@@ -71,10 +102,53 @@
     </div>
   </div>
   <div class="board" id="board">
-    <div style="font-size:0.85rem;color:#94a3b8;font-weight:700;margin-bottom:8px">🏆 ҮЗДІК НӘТИЖЕЛЕР</div>
+    <div style="font-size:.85rem;color:#94a3b8;font-weight:700;margin-bottom:8px">🏆 ҮЗДІК НӘТИЖЕЛЕР</div>
     <div id="l-list"></div>
   </div>
 </main>
-<script src="script.js?v=50"></script>
-</body>
-</html>
+<script>
+const defQ=[
+  {q:"Қазақстанның астанасы қай қала?",o:["Алматы","Астана","Шымкент","Түркістан"],c:1},
+  {q:"Ең үлкен ғаламшар қалай аталады?",o:["Марс","Жер","Юпитер","Сатурн"],c:2},
+  {q:"1 байтта неше бит бар?",o:["4 бит","8 бит","16 бит","32 бит"],c:1},
+  {q:"Абай Құнанбайұлы қай жылы туған?",o:["1845","1835","1855","1865"],c:0}
+];
+let isAuth=false,fails=0,lockUntil=Number(localStorage.getItem("bu_lock_v5"))||0;
+function loadShared(){try{const p=new URLSearchParams(location.search).get("q");if(p)return JSON.parse(decodeURIComponent(escape(atob(p))))}catch(e){}return null}
+const sharedQ=loadShared();
+let qs=sharedQ||JSON.parse(localStorage.getItem("bu_q"))||defQ;
+let leads=JSON.parse(localStorage.getItem("bu_l"))||[{n:"Әлихан",s:520},{n:"Айзере",s:440}];
+let idx=0,pts=0,ok=0,t=15,tm,usr="",lock=false,log=[];
+
+function show(id){
+  clearInterval(tm);
+  if(id==="v-login"&&isAuth)id="v-adm";
+  ["v-home","v-login","v-quiz","v-res","v-adm"].forEach(v=>document.getElementById(v).classList.add("hide"));
+  document.getElementById(id).classList.remove("hide");
+  document.getElementById("board").classList.toggle("hide",id!=="v-home");
+  document.getElementById("t-user").classList.toggle("on",id!=="v-adm"&&id!=="v-login");
+  document.getElementById("t-adm").classList.toggle("on",id==="v-adm"||id==="v-login");
+  document.getElementById("q-info").innerText=(sharedQ?"🔗 Арнайы сілтемедегі тест: ":"Платформада ")+qs.length+" сұрақ дайын";
+  const b=document.getElementById("l-list");b.innerHTML="";
+  leads.slice(0,3).forEach((x,i)=>b.innerHTML+=`<div class="row"><span>${i+1}. ${x.n}</span><b>${x.s} ұпай</b></div>`);
+  if(id==="v-login")checkLock();
+  if(id==="v-adm")renderAdm();
+}
+show("v-home");
+
+function checkLock(){
+  const now=Date.now(),btn=document.getElementById("login-btn"),msg=document.getElementById("lock-msg");
+  if(lockUntil>now){btn.disabled=true;msg.style.color="#fca5a5";msg.innerText="Бұғатталды: "+Math.ceil((lockUntil-now)/1000)+" сек күтіңіз";setTimeout(checkLock,1000)}
+  else{btn.disabled=false;msg.style.color="#94a3b8";msg.innerText="Құпиясөзді енгізіңіз"}
+}
+function checkPass(){
+  if(Date.now()<lockUntil)return;
+  if(btoa(document.getElementById("apass").value.trim())==="YnJhaW4yMDI2"){
+    isAuth=true;fails=0;document.getElementById("apass").value="";show("v-adm");
+  }else{
+    fails++;document.getElementById("apass").value="";
+    if(fails>=3){lockUntil=Date.now()+60000;localStorage.setItem("bu_lock_v5",lockUntil);fails=0;checkLock()}
+    else alert("Құпиясөз қате! Қалған мүмкіндік: "+(3-fails));
+  }
+}
+function renderAdm(){
