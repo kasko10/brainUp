@@ -22,9 +22,9 @@ input, select { width: 100%; padding: 13px; margin-bottom: 12px; background: #0b
 .btn2 { background: #1b2438; border: 1px solid #243049; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-/* 2x2 ПЛИТКАЛАР СТИЛІ (ЖАҢАРТЫЛҒАН БӨЛІМ) */
+/* 2x2 ПЛИТКАЛАР СТИЛІ */
 #q-txt { background: rgba(11, 15, 25, 0.55); border: 1px solid rgba(255,255,255,0.07); padding: 20px; border-radius: 16px; font-size: 1.25rem; line-height: 1.45; margin-bottom: 18px !important; }
-#q-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+#q-opts { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 14px !important; }
 
 .opt {
   position: relative;
@@ -41,6 +41,7 @@ input, select { width: 100%; padding: 13px; margin-bottom: 12px; background: #0b
   transition: all 0.22s ease;
   display: flex;
   align-items: flex-end;
+  margin-top: 0 !important;
 }
 
 .opt::before {
@@ -71,7 +72,7 @@ input, select { width: 100%; padding: 13px; margin-bottom: 12px; background: #0b
 }
 .opt:hover:not(:disabled)::before { background: #6366f1; color: #fff; }
 
-.ok { background: rgba(16,185,129,0.22) !important; border-color: #10b981 !important; color: #6ee7b7 !important; box-shadow: 0 0 20px rgba(16,185,129,0.25) !important; }
+.ok { background: rgba(16,185,129,0.22) !important; border-color: #10b981 !important; color: #6ee7b7 !important; }
 .ok::before { background: #10b981 !important; color: #fff !important; }
 .no { background: rgba(239,68,68,0.22) !important; border-color: #ef4444 !important; color: #fca5a5 !important; }
 .no::before { background: #ef4444 !important; color: #fff !important; }
@@ -85,8 +86,6 @@ input, select { width: 100%; padding: 13px; margin-bottom: 12px; background: #0b
 .hide { display: none !important; }
 canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 99; }
 
-@media (max-width: 520px) {
-  #q-opts, .grid2 { grid-template-columns: 1fr; }
-  .opt { min-height: 64px; padding: 16px 16px 16px 48px; align-items: center; }
-  .opt::before { top: 50%; transform: translateY(-50%); }
+@media (max-width: 480px) {
+  #q-opts { grid-template-columns: 1fr !important; }
 }
