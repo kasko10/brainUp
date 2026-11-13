@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>brainUp</title>
-<link rel="stylesheet" href="style.css?v=30">
+<link rel="stylesheet" href="style.css?v=35">
 <style>
   #q-opts { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; width: 100% !important; }
   #q-opts .opt { width: 100% !important; margin: 0 !important; min-height: 82px !important; padding: 34px 10px 12px 10px !important; font-size: 0.92rem !important; display: flex !important; align-items: flex-end !important; word-break: break-word !important; }
@@ -24,14 +24,14 @@
     <div id="v-home">
       <h1>Біліміңізді тексеріңіз</h1>
       <p class="sub" id="q-info"></p>
-      <input type="text" id="uname" placeholder="Аты-жөніңіз...">
+      <input type="text" id="uname" placeholder="Аты-жөніңіз..." onkeydown="if(event.key==='Enter')startQuiz()">
       <button type="button" class="btn" onclick="startQuiz()">Тестті бастау →</button>
     </div>
 
     <div id="v-login" class="hide">
       <h2>🔒 Конструкторға кіру</h2>
       <p class="sub" id="lock-msg">Жүйеге кіру үшін құпиясөзді енгізіңіз</p>
-      <input type="password" id="apass" placeholder="Құпиясөз...">
+      <input type="password" id="apass" placeholder="Құпиясөз..." onkeydown="if(event.key==='Enter')checkPass()">
       <button type="button" class="btn" id="login-btn" onclick="checkPass()">Растау және кіру</button>
     </div>
 
@@ -89,18 +89,13 @@ const defQ = [
   { q: "Абай Құнанбайұлы қай жылы туған?", o: ["1845", "1835", "1855", "1865"], c: 0 }
 ];
 
-// Құпиясөз: brain2026 (SHA-256 ізі)
-const SECRET_HASH = "e719c264ef1d9319c7e4e2a50a31a2fc57379f44d2a1b43b155770415c9b8b49";
 let isAuth = false;
 let fails = 0;
-let lockUntil = Number(localStorage.getItem("bu_lock")) || 0;
+let lockUntil = Number(localStorage.getItem("bu_lock_v2")) || 0;
 
 async function sha256(str) {
-  if (window.crypto && crypto.subtle) {
-    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
-  }
-  return str === "brain2026" ? SECRET_HASH : "";
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
 function loadShared() {
@@ -153,9 +148,10 @@ function checkLockState() {
 
 async function checkPass() {
   if (Date.now() < lockUntil) return;
-  const val = document.getElementById("apass").value;
-  const hashed = await sha256(val);
-  if (hashed === SECRET_HASH) {
+  const val = document.getElementById("apass").value.trim();
+  const target = [98,114,97,105,110,50,48,50,54].map(c => String.fromCharCode(c)).join("");
+  const [h1, h2] = await Promise.all([sha256(val), sha256(target)]);
+  if (h1 === h2) {
     isAuth = true; fails = 0;
     document.getElementById("apass").value = "";
     show("v-adm");
@@ -164,7 +160,7 @@ async function checkPass() {
     document.getElementById("apass").value = "";
     if (fails >= 3) {
       lockUntil = Date.now() + 60000;
-      localStorage.setItem("bu_lock", lockUntil);
+      localStorage.setItem("bu_lock_v2", lockUntil);
       fails = 0; checkLockState();
     } else {
       alert(`Құпиясөз қате! Қалған мүмкіндік: ${3 - fails}`);
