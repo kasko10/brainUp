@@ -1,333 +1,116 @@
 <!DOCTYPE html>
 <html lang="kk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>brainUp — Интерактивті білім платформасы</title>
-    <link href="https://googleapis.com" rel="stylesheet">
-    <style>
-        :root {
-            --bg-page: #0b0f19;
-            --bg-card: #131a2a;
-            --bg-surface: #1b2438;
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #243049;
-            --success-bg: rgba(16, 185, 129, 0.15);
-            --success-border: #10b981;
-            --success-text: #6ee7b7;
-            --error-bg: rgba(239, 68, 68, 0.15);
-            --error-border: #ef4444;
-            --error-text: #fca5a5;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        body {
-            background: radial-gradient(circle at top center, #162038 0%, #0b0f19 70%);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .navbar {
-            background: rgba(19, 26, 42, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 16px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .brand {
-            font-size: 1.55rem;
-            font-weight: 800;
-            color: var(--text-main);
-            text-decoration: none;
-            letter-spacing: -0.5px;
-        }
-
-        .brand span {
-            color: var(--primary);
-        }
-
-        .nav-badge {
-            background: rgba(99, 102, 241, 0.15);
-            color: #a5b4fc;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .main-wrapper {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 30px 20px;
-        }
-
-        .card-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 680px;
-            padding: 42px;
-        }
-
-        .hero-section {
-            text-align: center;
-        }
-
-        .hero-title {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 12px;
-            color: var(--text-main);
-            line-height: 1.25;
-        }
-
-        .hero-desc {
-            color: var(--text-muted);
-            font-size: 1.05rem;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        .input-group {
-            max-width: 380px;
-            margin: 0 auto 20px;
-            text-align: left;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-muted);
-        }
-
-        .clean-input {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--bg-surface);
-            border: 1.5px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 1rem;
-            color: var(--text-main);
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .clean-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        }
-
-        .primary-btn {
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            padding: 15px 36px;
-            font-size: 1rem;
-            font-weight: 700;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            width: 100%;
-            max-width: 380px;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
-        }
-
-        .primary-btn:hover {
-            background: var(--primary-hover);
-        }
-
-        .top-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 0.92rem;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        .timer-pill {
-            background: var(--bg-surface);
-            color: var(--text-main);
-            padding: 6px 14px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-        }
-
-        .progress-bar-bg {
-            width: 100%;
-            height: 8px;
-            background: var(--bg-surface);
-            border-radius: 99px;
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            width: 25%;
-            background: linear-gradient(90deg, #6366f1, #8b5cf6);
-            border-radius: 99px;
-            transition: width 0.3s ease;
-        }
-
-        .question-heading {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 24px;
-            line-height: 1.45;
-            color: var(--text-main);
-        }
-
-        .answers-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .answer-item {
-            background: var(--bg-surface);
-            border: 1.5px solid var(--border-color);
-            border-radius: 14px;
-            padding: 16px 20px;
-            font-size: 1.05rem;
-            font-weight: 500;
-            color: var(--text-main);
-            text-align: left;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            transition: all 0.2s ease;
-        }
-
-        .answer-item:hover:not(:disabled) {
-            border-color: var(--primary);
-            background: #222d45;
-        }
-
-        .letter-badge {
-            width: 34px;
-            height: 34px;
-            border-radius: 9px;
-            background: var(--bg-card);
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            font-weight: 700;
-            font-size: 0.9rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .answer-item.correct {
-            background: var(--success-bg) !important;
-            border-color: var(--success-border) !important;
-            color: var(--success-text) !important;
-        }
-
-        .answer-item.wrong {
-            background: var(--error-bg) !important;
-            border-color: var(--error-border) !important;
-            color: var(--error-text) !important;
-        }
-
-        .result-view { text-align: center; }
-
-        .score-circle {
-            width: 135px;
-            height: 135px;
-            border-radius: 50%;
-            background: rgba(99, 102, 241, 0.12);
-            border: 4px solid var(--primary);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin: 24px auto;
-        }
-
-        .score-number {
-            font-size: 2.1rem;
-            font-weight: 800;
-            color: #a5b4fc;
-        }
-
-        .score-label {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--text-muted);
-        }
-
-        .hidden { display: none; }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>brainUp</title>
+<style>
+  body { margin: 0; font-family: system-ui, sans-serif; background: #0b0f19; color: #f8fafc; display: flex; flex-direction: column; min-height: 100vh; }
+  nav { background: #131a2a; padding: 16px 24px; border-bottom: 1px solid #243049; display: flex; justify-content: space-between; font-weight: 800; font-size: 1.4rem; }
+  nav span { color: #6366f1; }
+  main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
+  .card { background: #131a2a; border: 1px solid #243049; border-radius: 20px; padding: 32px; width: 100%; max-width: 560px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+  input { width: 100%; padding: 14px; margin: 16px 0; background: #1b2438; border: 1px solid #243049; border-radius: 10px; color: #fff; font-size: 1rem; box-sizing: border-box; }
+  .btn { width: 100%; padding: 15px; background: #6366f1; color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; }
+  .btn:hover { background: #4f46e5; }
+  .opt { width: 100%; padding: 14px; margin-top: 10px; background: #1b2438; border: 1px solid #243049; border-radius: 10px; color: #fff; text-align: left; font-size: 1rem; cursor: pointer; display: block; }
+  .opt:hover { border-color: #6366f1; }
+  .ok { background: #065f46 !important; border-color: #10b981 !important; }
+  .no { background: #7f1d1d !important; border-color: #ef4444 !important; }
+  .hide { display: none; }
+</style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <a href="#" class="brand">brain<span>Up</span></a>
-        <div class="nav-badge">Онлайн тестілеу</div>
-    </nav>
+<nav><div>brain<span>Up</span></div><div style="font-size:0.9rem;color:#94a3b8;">Тест</div></nav>
 
-    <main class="main-wrapper">
-        <div class="card-container">
-            <div id="start-screen" class="hero-section">
-                <h1 class="hero-title">Біліміңізді тексеріп, жаңа деңгейге көтеріліңіз</h1>
-                <p class="hero-desc">Қысқа әрі қызықты интерактивті сұрақтарға жауап беріп, өз нәтижеңізді бірден біліңіз.</p>
-                
-                <div class="input-group">
-                    <label class="input-label" for="player-name">Аты-жөніңіз</label>
-                    <input type="text" id="player-name" class="clean-input" placeholder="Мысалы: Әлихан" maxlength="25">
-                </div>
-                
-                <button class="primary-btn" onclick="startQuiz()">Тестті бастау</button>
-            </div>
+<main>
+  <div class="card">
+    <div id="s1">
+      <h2>Біліміңізді тексеріңіз</h2>
+      <p style="color:#94a3b8;">Жалғастыру үшін атыңызды жазыңыз</p>
+      <input type="text" id="uname" placeholder="Аты-жөніңіз...">
+      <button class="btn" id="startBtn">Тестті бастау</button>
+    </div>
 
-            <div id="quiz-screen" class="hidden">
-                <div class="top-meta">
-                    <span id="q-progress-text">Сұрақ 1 / 4</span>
-                    <span class="timer-pill">⏱ <span id="timer">15</span> сек</span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" id="progress-fill"></div>
-                </div>
+    <div id="s2" class="hide">
+      <div style="display:flex;justify-content:space-between;color:#94a3b8;margin-bottom:15px;">
+        <span id="qnum">1/4</span>
+        <span>⏱ <b id="sec">15</b> сек</span>
+      </div>
+      <h3 id="qtext" style="text-align:left;margin-bottom:16px;"></h3>
+      <div id="opts"></div>
+    </div>
 
-                <div class="question-heading" id="question-text">Сұрақ жүктелуде...</div>
-                <div class="answers-stack" id="answers-container"></div>
-            </div>
+    <div id="s3" class="hide">
+      <h2 id="resTitle"></h2>
+      <h1 id="resScore" style="color:#818cf8;font-size:2.5rem;margin:15px 0;"></h1>
+      <p id="resInfo" style="color:#94a3b8;margin-bottom:20px;"></p>
+      <button class="btn" onclick="location.reload()">Қайта бастау</button>
+    </div>
+  </div>
+</main>
 
-            <div id="result-screen" class="result-view hidden">
-                <h2 class="hero-title" id="result-greeting">Жарайсыз!</h2>
-                <p class="hero-desc">Тест сәтті аяқталды</p>
-                
-                <div class="score-circle">
-                    <span class="score-number" id="final-score">0</span>
+<script>
+const data = [
+  { q: "Қазақстанның астанасы қай қала?", a: ["Алматы", "Астана", "Шымкент", "Түркістан"], c: 1 },
+  { q: "Ең үлкен ғаламшар қалай аталады?", a: ["Марс", "Жер", "Юпитер", "Сатурн"], c: 2 },
+  { q: "1 байтта неше бит бар?", a: ["4 бит", "8 бит", "16 бит", "32 бит"], c: 1 },
+  { q: "Абай Құнанбайұлы қай жылы туған?", a: ["1845", "1835", "1855", "1865"], c: 0 }
+];
+let idx = 0, pts = 0, okCount = 0, t = 15, timer, user = "";
+
+document.getElementById("startBtn").onclick = function() {
+  user = document.getElementById("uname").value.trim() || "Қонақ";
+  document.getElementById("s1").classList.add("hide");
+  document.getElementById("s2").classList.remove("hide");
+  showQ();
+};
+
+function showQ() {
+  clearInterval(timer);
+  t = 15;
+  document.getElementById("sec").innerText = t;
+  document.getElementById("qnum").innerText = (idx + 1) + " / " + data.length;
+  document.getElementById("qtext").innerText = data[idx].q;
+  const box = document.getElementById("opts");
+  box.innerHTML = "";
+  data[idx].a.forEach((txt, i) => {
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.innerText = ["A) ", "B) ", "C) ", "D) "][i] + txt;
+    b.onclick = () => pick(i);
+    box.appendChild(b);
+  });
+  timer = setInterval(() => {
+    t--;
+    document.getElementById("sec").innerText = t;
+    if (t <= 0) { clearInterval(timer); pick(-1); }
+  }, 1000);
+}
+
+function pick(sel) {
+  clearInterval(timer);
+  const cor = data[idx].c;
+  const btns = document.querySelectorAll(".opt");
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === cor) b.classList.add("ok");
+    else if (i === sel) b.classList.add("no");
+  });
+  if (sel === cor) { okCount++; pts += 100 + t * 10; }
+  setTimeout(() => {
+    idx++;
+    if (idx < data.length) showQ();
+    else {
+      document.getElementById("s2").classList.add("hide");
+      document.getElementById("s3").classList.remove("hide");
+      document.getElementById("resTitle").innerText = "Жарайсыз, " + user + "!";
+      document.getElementById("resScore").innerText = pts + " ұпай";
+      document.getElementById("resInfo").innerText = data.length + " сұрақтың " + okCount + "-і дұрыс";
+    }
+  }, 1000);
+}
+</script>
+</body>
+</html>
