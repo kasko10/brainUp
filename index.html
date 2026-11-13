@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>brainUp</title>
-<link rel="stylesheet" href="style.css?v=20">
+<link rel="stylesheet" href="style.css?v=30">
 <style>
   #q-opts { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; width: 100% !important; }
   #q-opts .opt { width: 100% !important; margin: 0 !important; min-height: 82px !important; padding: 34px 10px 12px 10px !important; font-size: 0.92rem !important; display: flex !important; align-items: flex-end !important; word-break: break-word !important; }
@@ -27,12 +27,14 @@
       <input type="text" id="uname" placeholder="Аты-жөніңіз...">
       <button type="button" class="btn" onclick="startQuiz()">Тестті бастау →</button>
     </div>
+
     <div id="v-login" class="hide">
       <h2>🔒 Конструкторға кіру</h2>
       <p class="sub" id="lock-msg">Жүйеге кіру үшін құпиясөзді енгізіңіз</p>
       <input type="password" id="apass" placeholder="Құпиясөз...">
       <button type="button" class="btn" id="login-btn" onclick="checkPass()">Растау және кіру</button>
     </div>
+
     <div id="v-quiz" class="hide">
       <div style="display:flex;justify-content:space-between;color:#94a3b8;margin-bottom:10px">
         <span id="q-num"></span><span>⏱ <b id="sec">15</b> сек</span>
@@ -41,6 +43,7 @@
       <h2 id="q-txt" style="text-align:left;margin-bottom:14px"></h2>
       <div id="q-opts"></div>
     </div>
+
     <div id="v-res" class="hide" style="text-align:center">
       <h2 id="r-hi"></h2>
       <h1 id="r-pts" style="color:#a5b4fc;font-size:2.5rem;margin:10px 0"></h1>
@@ -51,6 +54,7 @@
         <button type="button" class="btn btn2" onclick="show('v-home')">Жабу</button>
       </div>
     </div>
+
     <div id="v-adm" class="hide">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
         <h2 style="margin:0;text-align:left">Сұрақтар конструкторы</h2>
@@ -70,11 +74,153 @@
       <div id="adm-list" style="margin-top:14px;max-height:200px;overflow-y:auto"></div>
     </div>
   </div>
+
   <div class="board" id="board">
     <div style="font-size:0.85rem;color:#94a3b8;font-weight:700;margin-bottom:8px">🏆 ҮЗДІК НӘТИЖЕЛЕР</div>
     <div id="l-list"></div>
   </div>
 </main>
-<script src="script.js?v=20"></script>
-</body>
-</html>
+
+<script>
+const defQ = [
+  { q: "Қазақстанның астанасы қай қала?", o: ["Алматы", "Астана", "Шымкент", "Түркістан"], c: 1 },
+  { q: "Ең үлкен ғаламшар қалай аталады?", o: ["Марс", "Жер", "Юпитер", "Сатурн"], c: 2 },
+  { q: "1 байтта неше бит бар?", o: ["4 бит", "8 бит", "16 бит", "32 бит"], c: 1 },
+  { q: "Абай Құнанбайұлы қай жылы туған?", o: ["1845", "1835", "1855", "1865"], c: 0 }
+];
+
+// Құпиясөз: brain2026 (SHA-256 ізі)
+const SECRET_HASH = "e719c264ef1d9319c7e4e2a50a31a2fc57379f44d2a1b43b155770415c9b8b49";
+let isAuth = false;
+let fails = 0;
+let lockUntil = Number(localStorage.getItem("bu_lock")) || 0;
+
+async function sha256(str) {
+  if (window.crypto && crypto.subtle) {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+  return str === "brain2026" ? SECRET_HASH : "";
+}
+
+function loadShared() {
+  try {
+    const p = new URLSearchParams(window.location.search).get("q");
+    if (p) return JSON.parse(decodeURIComponent(escape(atob(p))));
+  } catch (e) {}
+  return null;
+}
+
+const sharedQ = loadShared();
+let qs = sharedQ || JSON.parse(localStorage.getItem("bu_q")) || defQ;
+let leads = JSON.parse(localStorage.getItem("bu_l")) || [{ n: "Әлихан", s: 520 }, { n: "Айзере", s: 440 }];
+let idx = 0, pts = 0, ok = 0, t = 15, tm, usr = "", lock = false, log = [];
+
+function show(id) {
+  clearInterval(tm);
+  if (id === "v-login" && isAuth) id = "v-adm";
+  ["v-home", "v-login", "v-quiz", "v-res", "v-adm"].forEach(v => document.getElementById(v).classList.add("hide"));
+  document.getElementById(id).classList.remove("hide");
+  document.getElementById("board").classList.toggle("hide", id !== "v-home");
+  document.getElementById("t-user").classList.toggle("on", id !== "v-adm" && id !== "v-login");
+  document.getElementById("t-adm").classList.toggle("on", id === "v-adm" || id === "v-login");
+  document.getElementById("q-info").innerText = (sharedQ ? "🔗 Арнайы сілтемедегі тест: " : "Платформада ") + qs.length + " сұрақ дайын";
+  const b = document.getElementById("l-list"); b.innerHTML = "";
+  leads.slice(0, 3).forEach((x, i) => b.innerHTML += `<div class="row"><span>${i + 1}. ${x.n}</span><b>${x.s} ұпай</b></div>`);
+  if (id === "v-login") checkLockState();
+  if (id === "v-adm") renderAdm();
+}
+show("v-home");
+
+function logoutStudio() { isAuth = false; show("v-home"); }
+
+function checkLockState() {
+  const now = Date.now();
+  const btn = document.getElementById("login-btn");
+  const msg = document.getElementById("lock-msg");
+  if (lockUntil > now) {
+    btn.disabled = true;
+    const sec = Math.ceil((lockUntil - now) / 1000);
+    msg.style.color = "#fca5a5";
+    msg.innerText = `Қауіпсіздік бұғаты: ${sec} секунд күтіңіз`;
+    setTimeout(checkLockState, 1000);
+  } else {
+    btn.disabled = false;
+    msg.style.color = "#94a3b8";
+    msg.innerText = "Жүйеге кіру үшін құпиясөзді енгізіңіз";
+  }
+}
+
+async function checkPass() {
+  if (Date.now() < lockUntil) return;
+  const val = document.getElementById("apass").value;
+  const hashed = await sha256(val);
+  if (hashed === SECRET_HASH) {
+    isAuth = true; fails = 0;
+    document.getElementById("apass").value = "";
+    show("v-adm");
+  } else {
+    fails++;
+    document.getElementById("apass").value = "";
+    if (fails >= 3) {
+      lockUntil = Date.now() + 60000;
+      localStorage.setItem("bu_lock", lockUntil);
+      fails = 0; checkLockState();
+    } else {
+      alert(`Құпиясөз қате! Қалған мүмкіндік: ${3 - fails}`);
+    }
+  }
+}
+
+function renderAdm() {
+  if (!isAuth) return show("v-login");
+  const b = document.getElementById("adm-list"); b.innerHTML = "";
+  qs.forEach((x, i) => b.innerHTML += `<div class="item"><span>${i + 1}. ${x.q} <b>(${"ABCD"[x.c]})</b></span><button class="del" onclick="delQ(${i})">Өшіру</button></div>`);
+}
+
+function addQ() {
+  if (!isAuth) return show("v-login");
+  const q = document.getElementById("nq").value.trim();
+  const o0 = document.getElementById("o0").value.trim(), o1 = document.getElementById("o1").value.trim();
+  const o2 = document.getElementById("o2").value.trim(), o3 = document.getElementById("o3").value.trim();
+  if (!q || !o0 || !o1 || !o2 || !o3) return alert("Барлық жолды толтырыңыз!");
+  qs.push({ q, o: [o0, o1, o2, o3], c: Number(document.getElementById("nc").value) });
+  localStorage.setItem("bu_q", JSON.stringify(qs));
+  ["nq", "o0", "o1", "o2", "o3"].forEach(i => document.getElementById(i).value = ""); renderAdm();
+}
+
+function delQ(i) {
+  if (!isAuth) return show("v-login");
+  if (qs.length <= 1) return alert("Кемінде 1 сұрақ қалуы керек!");
+  qs.splice(i, 1); localStorage.setItem("bu_q", JSON.stringify(qs)); renderAdm();
+}
+
+function shareQuiz() {
+  if (!isAuth) return show("v-login");
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(qs))));
+  const url = window.location.origin + window.location.pathname + "?q=" + encoded;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => alert("✅ Сілтеме көшірілді!"));
+  } else { prompt("Сілтемені көшіріп алыңыз:", url); }
+}
+
+function startQuiz() {
+  usr = document.getElementById("uname").value.trim() || usr || "Қонақ";
+  idx = 0; pts = 0; ok = 0; log = []; show("v-quiz"); nextQ();
+}
+
+function nextQ() {
+  clearInterval(tm); lock = false; t = 15;
+  document.getElementById("sec").innerText = t;
+  document.getElementById("q-num").innerText = `Сұрақ ${idx + 1} / ${qs.length}`;
+  document.getElementById("pfill").style.width = ((idx + 1) / qs.length * 100) + "%";
+  document.getElementById("q-txt").innerText = qs[idx].q;
+  const b = document.getElementById("q-opts"); b.innerHTML = "";
+  qs[idx].o.forEach((txt, i) => {
+    const btn = document.createElement("button"); btn.className = "opt";
+    btn.innerText = txt; btn.onclick = () => pick(i); b.appendChild(btn);
+  });
+  tm = setInterval(() => { t--; document.getElementById("sec").innerText = t; if (t <= 0) { clearInterval(tm); pick(-1); } }, 1000);
+}
+
+function pick(sel) {
