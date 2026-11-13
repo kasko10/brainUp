@@ -5,7 +5,6 @@ const defQ = [
   { q: "Абай Құнанбайұлы қай жылы туған?", o: ["1845", "1835", "1855", "1865"], c: 0 }
 ];
 
-// Құпиясөздің шифрланған ізі (SHA-256)
 const SECRET_HASH = "e719c264ef1d9319c7e4e2a50a31a2fc57379f44d2a1b43b155770415c9b8b49";
 let isAuth = false;
 let fails = 0;
@@ -31,6 +30,7 @@ let idx = 0, pts = 0, ok = 0, t = 15, tm, usr = "", lock = false, log = [];
 
 function show(id) {
   clearInterval(tm);
+  if (id === "v-login" && isAuth) id = "v-adm";
   ["v-home", "v-login", "v-quiz", "v-res", "v-adm"].forEach(v => document.getElementById(v).classList.add("hide"));
   document.getElementById(id).classList.remove("hide");
   document.getElementById("board").classList.toggle("hide", id !== "v-home");
@@ -39,13 +39,10 @@ function show(id) {
   document.getElementById("q-info").innerText = (sharedQ ? "🔗 Арнайы сілтемедегі тест: " : "Платформада ") + qs.length + " сұрақ дайын";
   const b = document.getElementById("l-list"); b.innerHTML = "";
   leads.slice(0, 3).forEach((x, i) => b.innerHTML += `<div class="row"><span>${i + 1}. ${x.n}</span><b>${x.s} ұпай</b></div>`);
+  if (id === "v-login") checkLockState();
+  if (id === "v-adm") renderAdm();
 }
 show("v-home");
-
-function openStudio() {
-  if (isAuth) { show("v-adm"); renderAdm(); }
-  else { show("v-login"); checkLockState(); }
-}
 
 function logoutStudio() {
   isAuth = false;
@@ -76,7 +73,7 @@ async function checkPass() {
   if (hashed === SECRET_HASH) {
     isAuth = true; fails = 0;
     document.getElementById("apass").value = "";
-    show("v-adm"); renderAdm();
+    show("v-adm");
   } else {
     fails++;
     document.getElementById("apass").value = "";
