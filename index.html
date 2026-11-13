@@ -5,112 +5,51 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>brainUp</title>
 <style>
-  body { margin: 0; font-family: system-ui, sans-serif; background: #0b0f19; color: #f8fafc; display: flex; flex-direction: column; min-height: 100vh; }
-  nav { background: #131a2a; padding: 16px 24px; border-bottom: 1px solid #243049; display: flex; justify-content: space-between; font-weight: 800; font-size: 1.4rem; }
-  nav span { color: #6366f1; }
-  main { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
-  .card { background: #131a2a; border: 1px solid #243049; border-radius: 20px; padding: 32px; width: 100%; max-width: 560px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-  input { width: 100%; padding: 14px; margin: 16px 0; background: #1b2438; border: 1px solid #243049; border-radius: 10px; color: #fff; font-size: 1rem; box-sizing: border-box; }
-  .btn { width: 100%; padding: 15px; background: #6366f1; color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; }
-  .btn:hover { background: #4f46e5; }
-  .opt { width: 100%; padding: 14px; margin-top: 10px; background: #1b2438; border: 1px solid #243049; border-radius: 10px; color: #fff; text-align: left; font-size: 1rem; cursor: pointer; display: block; }
-  .opt:hover { border-color: #6366f1; }
-  .ok { background: #065f46 !important; border-color: #10b981 !important; }
-  .no { background: #7f1d1d !important; border-color: #ef4444 !important; }
-  .hide { display: none; }
+  body { margin: 0; font-family: sans-serif; background: #0b0f19; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  .box { background: #131a2a; border: 1px solid #243049; border-radius: 16px; padding: 30px; width: 90%; max-width: 500px; text-align: center; }
+  input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: #fff; font-size: 16px; box-sizing: border-box; }
+  button { width: 100%; padding: 14px; background: #6366f1; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+  .opt { background: #1e293b; border: 1px solid #334155; margin-top: 10px; text-align: left; }
 </style>
 </head>
 <body>
 
-<nav><div>brain<span>Up</span></div><div style="font-size:0.9rem;color:#94a3b8;">Тест</div></nav>
-
-<main>
-  <div class="card">
-    <div id="s1">
-      <h2>Біліміңізді тексеріңіз</h2>
-      <p style="color:#94a3b8;">Жалғастыру үшін атыңызды жазыңыз</p>
-      <input type="text" id="uname" placeholder="Аты-жөніңіз...">
-      <button class="btn" id="startBtn">Тестті бастау</button>
-    </div>
-
-    <div id="s2" class="hide">
-      <div style="display:flex;justify-content:space-between;color:#94a3b8;margin-bottom:15px;">
-        <span id="qnum">1/4</span>
-        <span>⏱ <b id="sec">15</b> сек</span>
-      </div>
-      <h3 id="qtext" style="text-align:left;margin-bottom:16px;"></h3>
-      <div id="opts"></div>
-    </div>
-
-    <div id="s3" class="hide">
-      <h2 id="resTitle"></h2>
-      <h1 id="resScore" style="color:#818cf8;font-size:2.5rem;margin:15px 0;"></h1>
-      <p id="resInfo" style="color:#94a3b8;margin-bottom:20px;"></p>
-      <button class="btn" onclick="location.reload()">Қайта бастау</button>
-    </div>
-  </div>
-</main>
+<div class="box" id="app">
+  <h2>brainUp</h2>
+  <p>Аты-жөніңізді жазыңыз</p>
+  <input type="text" id="name" placeholder="Есіміңіз...">
+  <button type="button" onclick="run()">Тестті бастау</button>
+</div>
 
 <script>
-const data = [
-  { q: "Қазақстанның астанасы қай қала?", a: ["Алматы", "Астана", "Шымкент", "Түркістан"], c: 1 },
-  { q: "Ең үлкен ғаламшар қалай аталады?", a: ["Марс", "Жер", "Юпитер", "Сатурн"], c: 2 },
-  { q: "1 байтта неше бит бар?", a: ["4 бит", "8 бит", "16 бит", "32 бит"], c: 1 },
-  { q: "Абай Құнанбайұлы қай жылы туған?", a: ["1845", "1835", "1855", "1865"], c: 0 }
+const q = [
+  { t: "Қазақстанның астанасы?", o: ["Алматы", "Астана", "Шымкент"], c: 1 },
+  { t: "1 байтта неше бит бар?", o: ["4", "8", "16"], c: 1 },
+  { t: "Ең үлкен ғаламшар?", o: ["Марс", "Жер", "Юпитер"], c: 2 }
 ];
-let idx = 0, pts = 0, okCount = 0, t = 15, timer, user = "";
+let i = 0, s = 0, u = "";
 
-document.getElementById("startBtn").onclick = function() {
-  user = document.getElementById("uname").value.trim() || "Қонақ";
-  document.getElementById("s1").classList.add("hide");
-  document.getElementById("s2").classList.remove("hide");
-  showQ();
-};
-
-function showQ() {
-  clearInterval(timer);
-  t = 15;
-  document.getElementById("sec").innerText = t;
-  document.getElementById("qnum").innerText = (idx + 1) + " / " + data.length;
-  document.getElementById("qtext").innerText = data[idx].q;
-  const box = document.getElementById("opts");
-  box.innerHTML = "";
-  data[idx].a.forEach((txt, i) => {
-    const b = document.createElement("button");
-    b.className = "opt";
-    b.innerText = ["A) ", "B) ", "C) ", "D) "][i] + txt;
-    b.onclick = () => pick(i);
-    box.appendChild(b);
-  });
-  timer = setInterval(() => {
-    t--;
-    document.getElementById("sec").innerText = t;
-    if (t <= 0) { clearInterval(timer); pick(-1); }
-  }, 1000);
+function run() {
+  u = document.getElementById("name").value || "Қонақ";
+  next();
 }
 
-function pick(sel) {
-  clearInterval(timer);
-  const cor = data[idx].c;
-  const btns = document.querySelectorAll(".opt");
-  btns.forEach((b, i) => {
-    b.disabled = true;
-    if (i === cor) b.classList.add("ok");
-    else if (i === sel) b.classList.add("no");
-  });
-  if (sel === cor) { okCount++; pts += 100 + t * 10; }
-  setTimeout(() => {
-    idx++;
-    if (idx < data.length) showQ();
-    else {
-      document.getElementById("s2").classList.add("hide");
-      document.getElementById("s3").classList.remove("hide");
-      document.getElementById("resTitle").innerText = "Жарайсыз, " + user + "!";
-      document.getElementById("resScore").innerText = pts + " ұпай";
-      document.getElementById("resInfo").innerText = data.length + " сұрақтың " + okCount + "-і дұрыс";
-    }
-  }, 1000);
+function next() {
+  if (i >= q.length) {
+    document.getElementById("app").innerHTML = `<h2>Жарайсыз, ${u}!</h2><h1>${s} / ${q.length}</h1><button onclick="location.reload()">Қайта бастау</button>`;
+    return;
+  }
+  let h = `<h3>${i+1}. ${q[i].t}</h3>`;
+  q[i].o.forEach((x, idx) => { h += `<button class="opt" onclick="ans(${idx})">${x}</button>`; });
+  document.getElementById("app").innerHTML = h;
+}
+
+function ans(idx) {
+  if (idx === q[i].c) s++;
+  i++;
+  next();
 }
 </script>
+
 </body>
 </html>
